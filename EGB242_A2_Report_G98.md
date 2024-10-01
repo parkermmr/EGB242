@@ -1,4 +1,4 @@
-# Report for EGB242 Assignment
+# BASA National Space Program: Radio Frequency and Telecommunication Division
 
 **Group Number:** 98  
 **Group Members:** Parker Rennie (n11543043), Name2 (Student ID), Name3 (Student ID)  
@@ -33,7 +33,8 @@
    - [Challenges & Limitations](#challenges--limitations)
    - [Future Improvements](#future-improvements)
    - [Teamwork & Collaboration](#teamwork--collaboration)
-6. [Appendices](#appendices)
+6. [References](#references)
+7. [Appendices](#appendices)
    - [Appendix A: MATLAB Source Code](#appendix-a-matlab-source-code)
    - [Appendix B: Additional Material](#appendix-b-additional-material)
 
@@ -252,6 +253,11 @@ Display cleaned images and provide landing site recommendations.
 
 ### Teamwork & Collaboration
 *Reflect on teamwork and collaboration during the project.*
+
+---
+
+## References
+*A list of havard style references relevant to the project.*
 
 ---
 

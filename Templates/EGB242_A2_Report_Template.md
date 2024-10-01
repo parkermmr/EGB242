@@ -1,4 +1,4 @@
-# Report for EGB242 Assignment
+# BASA National Space Program: Radio Frequency and Telecommunication Division
 
 **Group Number:** XXX  
 **Group Members:** Name1 (Student ID), Name2 (Student ID), Name3 (Student ID)  
@@ -7,32 +7,33 @@
 
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [Section 1: De-noising the Communication Channel](#section-1-de-noising-the-communication-channel)
+0. [Introduction](#introduction)
+1. [Section 1: De-noising the Communication Channel](#section-1-de-noising-the-communication-channel)
    - [1.1 Audio Signal Analysis](#11-audio-signal-analysis)
    - [1.2 Demodulation of Audio Signals](#12-demodulation-of-audio-signals)
    - [1.3 Modeling Frequency-Dependent Distortion](#13-modeling-frequency-dependent-distortion)
    - [1.4 Noise Reduction Application](#14-noise-reduction-application)
    - [1.5 Single-Tone Noise Removal](#15-single-tone-noise-removal)
-3. [Section 2: Rover Camera Control](#section-2-rover-camera-control)
+2. [Section 2: Rover Camera Control](#section-2-rover-camera-control)
    - [2.1 DC Motor Modeling](#21-dc-motor-modeling)
    - [2.2 Feedback System Integration](#22-feedback-system-integration)
    - [2.3 System Dynamics Analysis](#23-system-dynamics-analysis)
    - [2.4 Gain Adjustment Analysis](#24-gain-adjustment-analysis)
    - [2.5 Control System for Panoramic Views](#25-control-system-for-panoramic-views)
    - [2.6 Panorama Capture Task](#26-panorama-capture-task)
-4. [Section 3: Choosing a Landing Site](#section-3-choosing-a-landing-site)
+3. [Section 3: Choosing a Landing Site](#section-3-choosing-a-landing-site)
    - [3.1 Initial Image Analysis](#31-initial-image-analysis)
    - [3.2 Signal Analysis](#32-signal-analysis)
    - [3.3 Filter Selection](#33-filter-selection)
    - [3.4 Noise Removal and Image Cleanup](#34-noise-removal-and-image-cleanup)
    - [3.5 Full Image Set Processing](#35-full-image-set-processing)
-5. [Conclusion](#conclusion)
-6. [Reflection](#reflection)
+4. [Conclusion](#conclusion)
+5. [Reflection](#reflection)
    - [Learning & Understanding](#learning--understanding)
    - [Challenges & Limitations](#challenges--limitations)
    - [Future Improvements](#future-improvements)
    - [Teamwork & Collaboration](#teamwork--collaboration)
+6. [References](#references)
 7. [Appendices](#appendices)
    - [Appendix A: MATLAB Source Code](#appendix-a-matlab-source-code)
    - [Appendix B: Additional Material](#appendix-b-additional-material)
@@ -252,6 +253,11 @@ Display cleaned images and provide landing site recommendations.
 
 ### Teamwork & Collaboration
 *Reflect on teamwork and collaboration during the project.*
+
+---
+
+## References
+*A list of havard style references relevant to the project.*
 
 ---
 
