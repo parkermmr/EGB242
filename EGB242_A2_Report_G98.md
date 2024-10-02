@@ -1,7 +1,7 @@
 # BASA National Space Program: Radio Frequency and Telecommunication Division
 
 **Group Number:** 98  
-**Group Members:** Parker Rennie (n11543043), Name2 (Student ID), Name3 (Student ID)  
+**Group Members:** Parker Rennie (n11543043), Jack Bowen (n10765395), Deven Johnson (n12031615)  
 **Unit Name:** Signal Analysis
 **Unit Code:** EGB242
 

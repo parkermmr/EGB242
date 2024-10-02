@@ -5,8 +5,8 @@
 % group members. If you have less than three members, use 0 for the
 % remaining student numbers.
 sid1 = 11543043;
-sid2 = 12345678;
-sid3 = 12345678;
+sid2 = 10765395;
+sid3 = 12031615;
 
 % Now, run this script and ensure the DataA2.mat file has been generated.
 
