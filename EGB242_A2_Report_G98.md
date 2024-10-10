@@ -41,6 +41,18 @@
 ---
 
 ## Introduction
+Following the success of the communication system developed during our initial placement at BASA, our team has been given an important role in the primary engineering team for the next crewed Mars expedition. We have made a number of improvements to further improve performance, building on the results of Assignment 1, where the system successfully kept clear and dependable contact between mission control and the spacecraft.
+
+This expedition plans to send a rover to investigate the proposed settlement location for humans on mars in order to create a permanent human habitat. The primary improvements are the use of Fourier Series in sophisticated noise reduction algorithms to get rid of periodic noise and provide even cleaner audio transmission. The method of converting analog to digital has also been improved to lower latency and improve signal integrity. These improvements are essential as our team prepares for the MARS-242 mission.
+
+Our work is divided into three main sections:
+De-noising the Communication Channel: The spacecraft that is traveling towards Mars has been equipped with the communication system that was developed in Assignment 1. As the spacecraft leaves Earth's atmosphere, atmospheric distortions cause the audio to become inaudible even though the radio transmitter and receiver are operating as designed. A colleague has created a more realistic channel model that includes additive noise and distortions that vary with frequency. To guarantee clear communication, our objective is to describe and counteract these noise processes.
+
+Rover Camera Control: Upon arrival the astronauts will send out a rover to explore prospective landing locations on Mars. The rover will send pictures of these locations back to the spaceship so the astronauts can decide on a secure landing spot. The rover's camera angle and axis is essential to this procedure since it has to spin on its yaw axis in order to properly photograph the Martian terrain.
+
+Choosing a Landing Site: Once the rover has successfully taken images of possible landing locations, the photos will be sent to BASA Headquarters, where an appropriate landing spot will be selected. Our team will also have to filter the extra noise that the communication channel produces for the visual signals.
+
+This report will highlight ...add to this once we have done reflection so we can highlight important learning experiences from this assignment
 
 *Provide a brief overview of the assignment, including its purpose and the main challenges faced in the communication and control systems described.*
 
