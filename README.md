@@ -17,5 +17,5 @@ Command:
 ```
 **Auto-Commit:** Automatically adds and commits all items to local git repo.
 ```shell
-.\Tools\Windows\autocommit.bat
+.\Tools\Windows\autocommit.bat "Your Commit Message"
 ```
