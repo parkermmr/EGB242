@@ -85,10 +85,34 @@ Discuss the audio quality and plot signals in both domains.
 ### 1.3 Modeling Frequency-Dependent Distortion
 
 #### Objective
-Model the channel's impulse response.
+In this task, we aim to model the frequency-dependent distortion introduced by a communication channel. The channel is characterized as a Linear Time-Invariant (LTI) system, where the output signal \( y(t) \) is the convolution of the input signal \( x(t) \) with the channel's impulse response \( h(t) \):
+\[ y(t) = x(t) * h(t) \]
+The characteristics of the channel are obfuscated through the `channel.p` MATLAB library and can be called through the 'channel(sid, x, fs)' function. This task aims to test the channel via a test signal aiming to model the impulse and frequency response of the channel. 
 
 #### Method
-Transmit test signals and analyze the channel's frequency response.
+To determine the impulse response \( h(t) \) of the channel, we need to choose an appropriate test signal \( x(t) \) to transmit through the channel. The ideal choice is the **Dirac delta function** \( δ(t) \), which has the property:
+
+\[ δ(t) * h(t) = h(t) \]
+
+This property is because the convolution of \( h(t) \) with \( δ(t) \) yields \( h(t) \) itself, effectively "sampling" the impulse response directly. The Dirac delta function is defined such that:
+
+\[ δ(t) =
+\begin{cases}
+\infty, & t = 0 \\
+0, & t \neq 0
+\end{cases}
+\]
+
+and satisfies the sifting property:
+
+\[ \int_{-\infty}^{\infty} δ(t - τ) h(τ) \, dτ = h(t) \]
+
+When \(x(t) = δ(t)\), the output \(y(t) \) becomes:
+
+\[ y(t) = δ(t) * h(t) = h(t) \]
+
+#### MATLAB Implementation
+By transmitting this impulse signal through the channel using the provided channel function, we obtain \( h(t) \) :
 
 #### Results
 Plot and compare the frequency responses.

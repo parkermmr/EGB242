@@ -156,5 +156,51 @@ while true
     end
 end
 
+%% 1.3
+
+% Create a discrete-time impulse signal
+x = zeros(N, 1);
+x(1) = 1;  % Impulse at the first sample
+
+%% Transmit the Impulse Signal Through the Channel
+
+% Use the provided channel function to transmit the impulse signal
+y = channel(11543043, x, fs);
+
+% The output y is the impulse response h(t) of the channel
+
+%% Compute the Fourier Transforms
+
+% Compute the Fourier Transform of the impulse response (channel frequency response)
+H = fft(y);
+
+% Compute the Fourier Transform of the multiplexed audio signal
+X = fft(audioMultiplexNoisy);
+
+% Define the frequency vector
+n = length(H);
+f = (0:n-1)*(fs/n);
+
+%% Plot the Frequency Responses
+
+% Plot the magnitude of the channel frequency response and the multiplexed audio spectrum
+figure;
+plot(f(1:floor(n/2)), abs(H(1:floor(n/2))), 'b', 'LineWidth', 1.5, 'DisplayName', '|H(f)| - Channel Response');
+hold on;
+plot(f(1:floor(n/2)), abs(X(1:floor(n/2))), 'r', 'LineWidth', 1.5, 'DisplayName', '|X(f)| - Multiplexed Audio');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+title('Frequency Response of the Channel and Multiplexed Audio Signal');
+legend;
+grid on;
+
+%% Analyze Additional Features Caused by Noise
+
+% From the plot, observe any discrepancies between |H(f)| and |X(f)|
+% Identify any peaks or irregularities in |X(f)| not present in |H(f)|
+
+% (Further analysis can be added here based on observations)
+
+
 
 
