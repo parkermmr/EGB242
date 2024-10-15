@@ -159,13 +159,13 @@ end
 %% 1.3
 
 % Create a discrete-time impulse signal
-x = zeros(N, 1);
+x = zeros(n, 1);
 x(1) = 1;  % Impulse at the first sample
 
 %% Transmit the Impulse Signal Through the Channel
 
 % Use the provided channel function to transmit the impulse signal
-y = channel(11543043, x, fs);
+y = channel(sid, x, fs);
 
 % The output y is the impulse response h(t) of the channel
 
