@@ -79,6 +79,7 @@ Include plots and discuss the observable characteristics.
 
 ![Alt text](<Figures/1.1 Recorded Audio Waveform in Time Domain.png>){width=500}
 ![Alt text](<Figures/1.1 Frequency Domain Plot of Multiplexed Audio Signal.png>){width=500}
+(detailed analysis will be included)
 
 ### 1.2 Demodulation of Audio Signals
 
