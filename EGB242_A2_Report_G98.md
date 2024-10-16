@@ -61,13 +61,24 @@ Choosing a Landing Site: Once the rover has successfully taken images of possib
 ### 1.1 Audio Signal Analysis
 
 #### Objective
-Analyze the noisy multiplexed audio signal.
+
+In this section, we aim to visualize the noisy multiplexed audio signal received through the communication channel. This involves plotting the signal in both the time and frequency domains to better understand its structure and identify any noise components that may distort the audio.
 
 #### Method
-Plot the signal in both time and frequency domains.
+
+**Time-Domain Analysis:** The multiplexed audio signal, `audioMultiplexNoisy`, was plotted as a function of time to observe amplitude variations and identify distortions over time.
+
+**Frequency-Domain Analysis:** Using the Fast Fourier Transform (FFT), the frequency content of the signal was analyzed. This helped identify any high-frequency noise or narrow-band interference that could be removed later.
+
+**MATLAB Implementation**
+
+** LEAVE FOR PARKER **
 
 #### Results
 Include plots and discuss the observable characteristics.
+
+![Alt text](<Figures/1.1 Recorded Audio Waveform in Time Domain.png>){width=500}
+![Alt text](<Figures/1.1 Frequency Domain Plot of Multiplexed Audio Signal.png>){width=500}
 
 ### 1.2 Demodulation of Audio Signals
 
