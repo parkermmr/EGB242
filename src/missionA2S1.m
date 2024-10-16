@@ -3,203 +3,239 @@
 %
 % Before starting to write code, generate your data with the ??? as
 % described in the assignment task.
-
 %% Initialise workspace
 clear all; close all;
 load DataA2 audioMultiplexNoisy fs sid;
 
+%% 1.1 Time and Frequency Domain Representations
 
-%% 1.1 Freq & Time domain representations of audio signal
-% Time vector representation of audio signal
+audioMultiplexNoisy = audioMultiplexNoisy(:);  
+
+% Time vector
 t = (0:length(audioMultiplexNoisy) - 1) / fs;
 
+% Plotted time domain signal
 figure;
 plot(t, audioMultiplexNoisy);
 xlabel('Time (seconds)');
 ylabel('Amplitude');
-title('Recorded Audio Waveform In Time Domain');
-grid on
+title('Recorded Audio Waveform in Time Domain');
+grid on;
 
-% Computed the FT of signal
-n = length(audioMultiplexNoisy);
-fftaudioMultiplexNoisy = fft(audioMultiplexNoisy);
+% Applied Hamming window to reduce spectral leakage
+windowed_signal = audioMultiplexNoisy .* hamming(length(audioMultiplexNoisy));
 
-% Freq vector representation of audio signal
-f = (0:n-1)*(fs/n);
+% Computed FFT of windowed signal
+fftaudioMultiplexNoisy = fft(windowed_signal);
 
-% Plotted the magnitude of the FFT (only positive freq due to symmetry)
+% Frequency vector adjusted for fftshift
+n = length(windowed_signal);
+f = (-n/2:n/2-1)*(fs/n);
+
+% Shifted zero frequency component to center of spectrum
+fft_shifted = fftshift(fftaudioMultiplexNoisy);
+
+% Plotted frequency domain
 figure;
-plot(f(1:floor(n/2)), abs(fftaudioMultiplexNoisy(1:floor(n/2))));
+plot(f, abs(fft_shifted));
 xlabel('Frequency (Hz)');
 ylabel('Magnitude');
 title('Frequency Domain Plot of Multiplexed Audio Signal');
 grid on;
 
-%% 1.2 De-multiplexing system and signal representations
+%% 1.2 Demodulation of Audio Signals
 
-%% SETUP
+% Used absolute value of shifted FFT to find peaks
+system = abs(fft_shifted);
 
-system = abs(fftaudioMultiplexNoisy);
+% Adjusted parameters for peak detection
+minPeakProminence = max(system) * 0.1;
+minPeakDistance = 10000;
 
-% Got only the first half of the FFT (positive freqs) due to symmetry
-n = length(system);
-half_n = floor(n / 2);
-system_half = system(1:half_n);
-f_half = f(1:half_n);
+% Found peaks in positive frequencies only (since spectrum is symmetric)
+positive_freqs = f(f >= 0);
+system_positive = system(f >= 0);
 
-% Set the domain for peak detection
-minPeakProminence = max(system_half) * 0.1;  
-minPeakDistance = 10000; 
+% Found peaks in the magnitude spectrum to detect carrier frequencies
+[pks, locs] = findpeaks(system_positive, 'MinPeakProminence', minPeakProminence, 'MinPeakDistance', minPeakDistance);
+carrier_frequencies = positive_freqs(locs);
 
-% Found peaks with adjusted parameters in the positive freq range
-[pks, locs] = findpeaks(system_half, 'MinPeakProminence', minPeakProminence, 'MinPeakDistance', minPeakDistance);
-carrier_frequencies = f_half(locs);
-
-% Printed out the detected carrier freqs
+% Printed detected carrier frequencies
 fprintf('Detected Carrier Frequencies:\n');
 for i = 1:length(carrier_frequencies)
     fprintf('%.2f Hz\n', carrier_frequencies(i));
 end
 
-% Visualized the detected peaks in the positive frequency range
+% Plotted detected peaks on the magnitude spectrum
 figure;
-plot(f_half, system_half);
+plot(positive_freqs, system_positive);
 hold on;
-plot(carrier_frequencies, pks, 'ro'); 
-title('Detected Carrier Frequencies in the Positive Frequency Range');
+plot(carrier_frequencies, pks, 'ro');
 xlabel('Frequency (Hz)');
 ylabel('Magnitude');
+title('Detected Carrier Frequencies in the Positive Frequency Range');
 grid on;
+hold off;
 
-
-% Pre-allocated cell arrary for demod signals
+% Pre-allocatde cell array for demodulated signals
 demodulated_signals = cell(1, length(carrier_frequencies));
 
-%% VISUALIZE & STORE
-
-% Demod set
 for i = 1:length(carrier_frequencies)
-    % Create a sin carrier freq for demod
-    carrier = cos(2 * pi * carrier_frequencies(i) * t);
-    
-    % Demod with carrier
-    demodulated_signal = audioMultiplexNoisy .* carrier;
-    
-    % Low-pass filter to extract the demod baseband signal
-    [b, a] = butter(6, 0.1); 
-    demodulated_signal = filter(b, a, demodulated_signal);
+    % Extracted carrier frequency
+    fc = carrier_frequencies(i);
+
+    % Creatde analytic signal using Hilbert transform
+    analytic_signal = hilbert(audioMultiplexNoisy);
+
+    t = (0:length(audioMultiplexNoisy) - 1)' / fs;
+
+    % Demodulated using complex exponential
+    demodulated_complex = analytic_signal .* exp(-1j * 2 * pi * fc * t);
+
+    % Low-pass filter to extract baseband signal
+    audio_bandwidth = 8000;
+    cutoff_freq = audio_bandwidth / (fs / 2);
+
+    [b, a] = butter(6, cutoff_freq);
+    demodulated_signal = filter(b, a, real(demodulated_complex));
 
     demodulated_signals{i} = demodulated_signal;
-    
-    % Time domain of demod
+
+    % Plotted time domain and frequency domain representations
     figure;
+    subplot(2,1,1);
     plot(t, demodulated_signal);
     xlabel('Time (seconds)');
     ylabel('Amplitude');
-    title(sprintf('Demodulated Audio Signal in Time Domain (Carrier: %.2f Hz)', carrier_frequencies(i)));
+    title(sprintf('Demodulated Audio Signal %d in Time Domain (Carrier: %.2f Hz)', i, fc));
     grid on;
-    
-    % FFT of demod signal
+
+    % Computed FFT of demodulated signal
     fft_demodulated_signal = fft(demodulated_signal);
-    
-    % Positive freq plot of demod
-    n = length(demodulated_signal);
-    f = (0:n-1)*(fs/n);
-    figure;
-    plot(f(1:floor(n/2)), abs(fft_demodulated_signal(1:floor(n/2))));
+    n_demod = length(demodulated_signal);
+    f_demod = (-n_demod/2:n_demod/2-1)*(fs/n_demod);
+    fft_demod_shifted = fftshift(fft_demodulated_signal);
+
+    subplot(2,1,2);
+    plot(f_demod, abs(fft_demod_shifted));
     xlabel('Frequency (Hz)');
     ylabel('Magnitude');
-    title(sprintf('Demodulated Audio Signal in Frequency Domain (Carrier: %.2f Hz)', carrier_frequencies(i)));
+    title(sprintf('Demodulated Audio Signal %d in Frequency Domain (Carrier: %.2f Hz)', i, fc));
     grid on;
 end
 
 %% PLAYBACK
 
-% CLI help
 num_signals = length(demodulated_signals);
 fprintf('There are %d demodulated signals available.\n', num_signals);
 fprintf('To play a specific signal, enter a number between 1 and %d.\n', num_signals);
-fprintf('=================================================================================================================\n')
-fprintf('\n')
+fprintf('=================================================================\n\n');
 
-
-% Takes user input for signal index
 while true
     signal_index = input(sprintf('Enter a number between 1 and %d to play a signal, or 0 to quit: ', num_signals));
-    
-    % End Case
+
     if signal_index == 0
         fprintf('Exiting.\n');
         break;
     end
-    
-    % Input validation
+
     if signal_index >= 1 && signal_index <= num_signals
         fprintf('Playing demodulated audio for signal %d (Carrier Frequency: %.2f Hz)\n', signal_index, carrier_frequencies(signal_index));
-        
-        player = audioplayer(demodulated_signals{signal_index}, fs);
-        play(player);
-        
-        % Wait for the playback
-        while isplaying(player)
-            pause(0.1);
-        end
-        
-        fprintf('Finished playing signal %d.\n', signal_index);
-        fprintf('\n')
-        fprintf('=================================================================================================================\n')
-        fprintf('\n')
 
-        
+        % Normalized the demodulated signal for playback
+        playback_signal = demodulated_signals{signal_index};
+        playback_signal = playback_signal / max(abs(playback_signal));
+
+        player = audioplayer(playback_signal, fs); %#ok<*TNMLP> 
+        play(player);
+
+        pause(length(playback_signal) / fs + 0.5);
+
+        fprintf('Finished playing signal %d.\n\n', signal_index);
+        fprintf('=================================================================\n\n');
     else
         fprintf('Invalid input. Please enter a number between 1 and %d.\n', num_signals);
     end
 end
 
-%% 1.3
 
-% Create a discrete-time impulse signal
-x = zeros(n, 1);
-x(1) = 1;  % Impulse at the first sample
+%% 1.3 Impulse Response Transmission Through Channel
 
-%% Transmit the Impulse Signal Through the Channel
+% ----------------->   SPECIAL APPLICATION BUILT FOR TESTING (FUN)   <----------------- %
+% TEST
+ChannelAnalysisApp
 
-% Use the provided channel function to transmit the impulse signal
-y = channel(sid, x, fs);
+%% MATHEMATICAL CHOICE
 
-% The output y is the impulse response h(t) of the channel
+% Generated an impulse signal (Dirac delta approximation)
+impulse_length = 1024;
+impulse_signal = zeros(impulse_length, 1);
+impulse_signal(1) = 1;
 
-%% Compute the Fourier Transforms
+% Transmitted the impulse signal through the channel
+y_impulse = channel(sid, impulse_signal, fs);
 
-% Compute the Fourier Transform of the impulse response (channel frequency response)
-H = fft(y);
+t_impulse = (0:length(y_impulse) - 1) / fs;
 
-% Compute the Fourier Transform of the multiplexed audio signal
-X = fft(audioMultiplexNoisy);
-
-% Define the frequency vector
-n = length(H);
-f = (0:n-1)*(fs/n);
-
-%% Plot the Frequency Responses
-
-% Plot the magnitude of the channel frequency response and the multiplexed audio spectrum
+% Plotted the impulse response
 figure;
-plot(f(1:floor(n/2)), abs(H(1:floor(n/2))), 'b', 'LineWidth', 1.5, 'DisplayName', '|H(f)| - Channel Response');
-hold on;
-plot(f(1:floor(n/2)), abs(X(1:floor(n/2))), 'r', 'LineWidth', 1.5, 'DisplayName', '|X(f)| - Multiplexed Audio');
-xlabel('Frequency (Hz)');
-ylabel('Magnitude');
-title('Frequency Response of the Channel and Multiplexed Audio Signal');
-legend;
+plot(t_impulse, y_impulse);
+xlabel('Time (seconds)');
+ylabel('Amplitude');
+title('Impulse Response h(t) of the Channel');
 grid on;
 
-%% Analyze Additional Features Caused by Noise
+% Computed the frequency response H(f) by taking FFT of the impulse response
+H_f = fft(y_impulse);
+H_f = H_f(:); 
+N_fft = length(H_f);
 
-% From the plot, observe any discrepancies between |H(f)| and |X(f)|
-% Identify any peaks or irregularities in |X(f)| not present in |H(f)|
+% Computed magnitude spectrum of audioMultiplexNoisy (from previous FFT)
+fftaudioMultiplexNoisy = fftaudioMultiplexNoisy(:);
+N_audio = length(fftaudioMultiplexNoisy);
 
-% (Further analysis can be added here based on observations)
+% Ensured both spectra are of the same length by zero-padding the shorter one
+if N_audio > N_fft
+    H_f = [H_f; zeros(N_audio - N_fft, 1)];
+    f_H = (0:N_audio - 1)' * (fs / N_audio);
+elseif N_fft > N_audio
+    fftaudioMultiplexNoisy = [fftaudioMultiplexNoisy; zeros(N_fft - N_audio, 1)];
+    f = (-N_fft/2:N_fft/2 -1)' * (fs / N_fft);
+else
+    f_H = (0:N_fft - 1)' * (fs / N_fft);
+    f = (-N_fft/2:N_fft/2 -1)' * (fs / N_fft);
+end
+
+% Computed magnitude spectra
+H_f_mag = abs(H_f);
+audio_mag = abs(fftaudioMultiplexNoisy);
+
+% Normalized both spectra for comparison
+H_f_mag_norm = H_f_mag / max(H_f_mag);
+audio_mag_norm = audio_mag / max(audio_mag);
+
+% Shifted the audio spectrum to center zero frequency
+audio_mag_norm_shifted = fftshift(audio_mag_norm);
+
+% Plotted both spectra on the same set of axes
+figure;
+plot(f_H, H_f_mag_norm, 'b', 'DisplayName', '|H(f)| - Channel Frequency Response');
+hold on;
+plot(f, audio_mag_norm_shifted, 'r', 'DisplayName', 'Magnitude Spectrum of audioMultiplexNoisy');
+xlabel('Frequency (Hz)');
+ylabel('Normalized Magnitude');
+title('Comparison of |H(f)| and Magnitude Spectrum of audioMultiplexNoisy');
+legend('show');
+grid on;
+xlim([0 fs/2]);
+hold off;
+
+% THINGS YOU CAN COMMENT ON %
+fprintf('Observations:\n');
+fprintf('- The frequency response |H(f)| shows how the channel attenuates or amplifies different frequencies.\n');
+fprintf('- The magnitude spectrum of audioMultiplexNoisy includes both the effects of the channel and additional noise processes.\n');
+fprintf('- Any discrepancies between |H(f)| and the audio spectrum may indicate additional features caused by the noising process.\n');
+
 
 
 
