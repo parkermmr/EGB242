@@ -235,8 +235,3 @@ fprintf('Observations:\n');
 fprintf('- The frequency response |H(f)| shows how the channel attenuates or amplifies different frequencies.\n');
 fprintf('- The magnitude spectrum of audioMultiplexNoisy includes both the effects of the channel and additional noise processes.\n');
 fprintf('- Any discrepancies between |H(f)| and the audio spectrum may indicate additional features caused by the noising process.\n');
-
-
-
-
-
