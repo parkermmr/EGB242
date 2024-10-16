@@ -155,6 +155,3 @@ while true
         fprintf('Invalid input. Please enter a number between 1 and %d.\n', num_signals);
     end
 end
-
-
-
