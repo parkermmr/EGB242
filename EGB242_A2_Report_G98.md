@@ -59,7 +59,45 @@ This report will highlight ...add to this once we have done reflection so we can
 ## Section 1: De-noising the Communication Channel
 
 ### 1.1 Audio Signal Analysis
+Time-Domain Plot of Multiplexed Audio Signal
+Graph 1: The recorded audio waveform in the time domain over 20 seconds shows amplitude variations, indicating potential noise interference during transmission. These variations suggest the influence of multiple noise sources as the signal passes through Earth's atmosphere and space.
 
+Frequency-Domain Plot of Multiplexed Audio Signal
+Graph 2: This plot reveals distinct peaks at various frequencies. Each peak represents different components within the multiplexed audio signal, highlighting the carrier frequencies modulated with the original audio signals and potential noise frequencies introduced during transmission.
+
+Carrier Frequencies
+Graph 3: Significant peaks at approximately 10^4 Hz, 3 x 10^4 Hz, 5 x 10^4 Hz, and 7 x 10^4 Hz are marked with red circles. These peaks indicate the primary frequencies for de-multiplexing the audio signals and suggest potential noise interference.
+
+Demodulated Audio Signal Analysis
+Carrier Frequency: 8260.00 Hz
+
+Graph 4 (Time Domain): The signal oscillates around zero amplitude with notable fluctuations, indicating the presence of noise and distortions likely from single-frequency tones introduced during transmission.
+
+Graph 5 (Frequency Domain): A dominant peak at 0 Hz suggests the main frequency component of the signal, with additional smaller peaks indicating harmonics or noise.
+
+Carrier Frequency: 24240.00 Hz
+
+Graph 6 (Time Domain): Amplitude variations indicate that the audio signal retains its structure but is significantly influenced by noise and distortions from atmospheric and single-tone noise effects.
+
+Graph 7 (Frequency Domain): A significant peak at 0 Hz with additional smaller peaks highlights the presence of noise components, emphasizing the need for de-noising techniques.
+
+Carrier Frequency: 40260.00 Hz
+
+Graph 8 (Time Domain): The signal shows significant fluctuations around zero amplitude, indicating the impact of noise and distortions during transmission.
+
+Graph 9 (Frequency Domain): A dominant peak at 0 Hz and additional smaller peaks suggest the presence of noise or harmonics, emphasizing the necessity for cleaner signal processing.
+
+Carrier Frequency: 56100.00 Hz
+
+Graph 10 (Time Domain): Variations in amplitude indicate the audio signal is heavily influenced by noise and distortions from atmospheric distortions and single-tone noise effects.
+
+Graph 11 (Frequency Domain): A significant peak at 0 Hz with smaller peaks suggests noise components, highlighting the need for de-noising techniques to enhance audio quality.
+
+Carrier Frequency: 72080.00 Hz
+
+Graph 12 (Time Domain): Fluctuations around zero amplitude indicate the presence of noise and distortions, affecting the signal’s structure.
+
+Graph 13 (Frequency Domain): A strong low-frequency component with additional noise elements suggests the presence of single-tone noise effects, necessitating effective de-noising strategies.
 #### Objective
 Analyze the noisy multiplexed audio signal.
 
