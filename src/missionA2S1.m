@@ -154,7 +154,7 @@ while true
         fprintf('Finished playing signal %d.\n\n', signal_index);
         fprintf('=================================================================\n\n');
     else
-        fprintf('Invalid input. Please enter a number between 1 and %d.\n', num_signals);
+        fprintf('Invalid input. Please enter a number betwee n 1 and %d.\n', num_signals);
     end
 end
 
