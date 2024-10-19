@@ -150,6 +150,9 @@ Graph 13 (Frequency Domain): A strong low-frequency component with additional no
 
 ** LEAVE FOR PARKER **
 
+
+
+
 ### 1.3 Modeling Frequency-Dependent Distortion
 
 #### Objective
