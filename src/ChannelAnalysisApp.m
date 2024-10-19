@@ -1,3 +1,41 @@
+% Channel Analysis App
+% Description:
+% The Channel Analysis App allows users to generate various types of test signals,
+% transmit them through a modeled communication channel, and analyze the results.
+% The app supports time-domain and frequency-domain signal visualization, with
+% options for customizing signal properties, including duration, signal type,
+% and integer parameters such as the number of sinusoids or PRBS order.
+% Users can visualize the time-domain input and output signals, as well as the
+% frequency response of the channel.
+
+% Features:
+% - **Signal Generation:** Generate signals such as impulse signals, PRBS, sum of sinusoids, and more.
+% - **Customizable Signal Parameters:** Adjust signal duration (in milliseconds) and integer parameters 
+%   (e.g., number of sinusoids, PRBS order) depending on the selected signal type.
+% - **Channel Analysis:** Transmit signals through a predefined channel model and analyze the output.
+% - **Time-Domain Visualization:** View the original and channel-affected signals in the time domain.
+% - **Frequency-Domain Visualization:** View the estimated frequency response |H(f)| of the channel.
+% - **Result Display:** Detailed results including magnitude and phase response at specific frequencies.
+
+% How to Use:
+% 1. **Select Signal Type:** Choose a signal type from the drop-down menu (e.g., Impulse, PRBS).
+%    Depending on the signal type, additional controls for integer parameters may be enabled.
+% 2. **Adjust Parameters:** Modify signal duration and integer parameters as needed.
+% 3. **Analyze Channel:** Press the "Analyze Channel" button to generate the signal, transmit it through the channel, 
+%    and plot the time-domain and frequency-domain responses.
+% 4. **View Results:** The time-domain plot shows the original and output signals. The frequency-domain plot 
+%    shows the estimated frequency response of the channel, and numerical results are displayed in the output area.
+
+% Notes:
+% - The app loads channel information (sampling frequency `fs` and system ID `sid`) from the `DataA2.mat` file.
+% - Signal duration can be set from 1 to 5000 ms.
+% - Integer parameters (e.g., number of sinusoids or PRBS order) are available for specific signal types.
+% - Ensure valid signal types and parameters are selected before analyzing the channel.
+
+% Class ChannelAnalysisApp < matlab.apps.AppBase
+% This class implements the UI and functionality for the Channel Analysis App, 
+% including signal generation, channel transmission, and result visualization.
+
 classdef ChannelAnalysisApp < matlab.apps.AppBase
 
     properties (Access = public)
@@ -105,7 +143,6 @@ classdef ChannelAnalysisApp < matlab.apps.AppBase
 
         function IntegerParameterEditFieldValueChanged(app, event)
             value = round(event.Value);
-            % Ensure value is within limits
             value = max(min(value, app.IntegerParameterSlider.Limits(2)), app.IntegerParameterSlider.Limits(1));
             app.IntegerParameterEditField.Value = value;
             app.IntegerParameterSlider.Value = value;
@@ -118,7 +155,6 @@ classdef ChannelAnalysisApp < matlab.apps.AppBase
 
         function DurationmsEditFieldValueChanged(app, event)
             value = event.Value;
-            % Ensure value is within limits
             value = max(min(value, app.DurationmsSlider.Limits(2)), app.DurationmsSlider.Limits(1));
             app.DurationmsEditField.Value = value;
             app.DurationmsSlider.Value = value;
@@ -214,7 +250,6 @@ classdef ChannelAnalysisApp < matlab.apps.AppBase
             fft_signal = fft(app.signal);
             fft_y_signal = fft(app.y_signal);
 
-            % Avoid division by zero
             epsilon = 1e-12;
             fft_signal_abs = fft_signal;
             fft_signal_abs(abs(fft_signal_abs) < epsilon) = epsilon;
@@ -222,7 +257,6 @@ classdef ChannelAnalysisApp < matlab.apps.AppBase
             % Compute frequency response H(f) = Y(f)/X(f)
             H_f = fft_y_signal ./ fft_signal_abs;
 
-            % Plot magnitude spectrum
             cla(app.FrequencyDomainAxes); 
             plot(app.FrequencyDomainAxes, f(1:n/2), abs(H_f(1:n/2)));
             xlabel(app.FrequencyDomainAxes, 'Frequency (Hz)');
@@ -238,7 +272,6 @@ classdef ChannelAnalysisApp < matlab.apps.AppBase
             fft_signal = fft(app.signal);
             fft_y_signal = fft(app.y_signal);
         
-            % Avoid division by zero
             epsilon = 1e-12;
             fft_signal_abs = fft_signal;
             fft_signal_abs(abs(fft_signal_abs) < epsilon) = epsilon;
@@ -401,7 +434,7 @@ classdef ChannelAnalysisApp < matlab.apps.AppBase
 
     methods (Access = public)
 
-        % Construct app
+        % App startup
         function app = ChannelAnalysisApp
 
             createComponents(app)
