@@ -220,7 +220,7 @@ The expression obtained from multiplying the motor's transfer function by the un
 \]
 was simplified using partial fractions. The inverse Laplace transform of each term in the partial fraction decomposition was calculated to obtain the time-domain response, \( \psi_{out}(t) \). Resultantly, the system response can be modeled as such:
 \[
-\psi_{out} = -4 + 2t + 4e^{-0.5t};
+\psi_{out} = -4 + 2t + 4e^{-0.5t}
 \]
 
 **A time vector and simulation were created:**
@@ -389,4 +389,5 @@ Display cleaned images and provide landing site recommendations.
 
 ### Appendix B: Additional Material
 
-*Any additional diagrams, data, or notes used in the report.*
+![2.1 Working Page 1](Figures/2.1_Working_pg1.jpg)
+![2.1 Working Page 2](Figures/2.1_Working.jpg)
