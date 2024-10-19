@@ -197,6 +197,61 @@ Provide a mathematical analysis, qualatative and quantative. Use logic and reaso
 Discuss the limitations of the Dirac Delta in practical applications and why signals like chirp can be better. Use logic and reasoning as a basis and pull on references if needed.
 
 ### 1.4 Noise Reduction Application
+Analysis of Noise Levels in Frequency Domain Post-Processing
+
+Graph 1: Frequency Domain at 8260 Hz
+Observations: This graph shows peaks at specific frequencies, which indicate noise. Despite the noise peaks, the overall spectrum is relatively smooth. The noise level is lower than in Graph 5 but higher than in the others.
+
+Graph 3: Frequency Domain at 40260 Hz
+Observations: This graph displays minimal noise with some small peaks scattered throughout. It shows better noise reduction compared to Graphs 1 and 5.
+
+Graph 2: Frequency Domain at 24240 Hz
+Observations: This graph contains extremely minimal noise, with only tiny peaks visible. It is cleaner than Graphs 1, 3, and 5, indicating effective noise reduction.
+
+Graph 4: Frequency Domain at 56100 Hz
+Observations: This graph demonstrates the most effective noise reduction, with barely any visible noise peaks. The significant improvement in signal clarity makes it the smoothest and least noisy overall.
+
+Graph 5: Frequency Domain at 72080 Hz
+Observations: This graph exhibits the most noise among the analyzed graphs. Noticeable noise peaks are present, indicating higher levels of residual noise.
+
+
+
+Compressed Cleaned Audio at 8260 Hz
+Observations:
+
+Time Domain: The cleaned audio signal at 8260 Hz shows a noticeable reduction in noise. However, there are still some residual noise peaks, which may slightly impact the overall clarity.
+
+Overall Quality: While the noise is reduced, the signal is not as clean as those at higher frequencies. Additional filtering might be required for further improvement.
+
+Compressed Cleaned Audio at 24240 Hz
+Observations:
+
+Time Domain: The cleaned audio at 24240 Hz is significantly clearer. The extremely minimal noise peaks are barely noticeable, resulting in a much cleaner signal.
+
+Overall Quality: This frequency demonstrates effective noise reduction, making the audio sound cleaner and more refined.
+
+Compressed Cleaned Audio at 40260 Hz
+Observations:
+
+Time Domain: The cleaned audio at 40260 Hz displays minimal noise with small peaks scattered throughout. This indicates a successful noise reduction process.
+
+Overall Quality: The audio quality is relatively clean, but not as pristine as the 24240 Hz or 56100 Hz signals. Minor fine-tuning may enhance clarity further.
+
+Compressed Cleaned Audio at 56100 Hz
+Observations:
+
+Time Domain: The cleaned audio at 56100 Hz is impressively smooth with very minimal residual noise, making it the cleanest signal overall.
+
+Overall Quality: This frequency demonstrates the most effective noise reduction, resulting in high-quality, clear audio. The signal is highly refined and free from noticeable noise peaks.
+
+Compressed Cleaned Audio at 72080 Hz
+Observations:
+
+Time Domain: The cleaned audio at 72080 Hz shows some residual noise peaks, making it noisier compared to the others.
+
+Overall Quality: While there is noticeable noise reduction, the signal quality is not as high as the others, particularly the 56100 Hz signal.
+
+
 
 #### Objective
 Apply the modeled channel distortion for noise reduction.
