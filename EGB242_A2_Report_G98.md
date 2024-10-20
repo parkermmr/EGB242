@@ -62,18 +62,18 @@ Choosing a Landing Site: Once the rover has successfully taken images of possib
 ### 1.1 Audio Signal Analysis
 
 #### Objective
-The aim of this task is to use the sample audio signal provided, `audioMultiplexNoisy`, and the provided sampling rate `fs`. This section will model the multiplexed audio signal in the time and frequency domain in order to illuminate the invidual signals before multiplexing. This will also discuss any potential noising introduced by the channel after modulation.
+The aim of this task is to use the sample audio signal provided, `audioMultiplexNoisy`, and the provided sampling rate `fs`. This section will model the multiplexed audio signal in the time and frequency domain in order to illuminate the individual signals before multiplexing. This will also discuss any potential noise introduced by the channel after modulation.
 
 #### Method
 After loading `audioMultiplexNoisy` and `fs` from DataA2, the signal was first plotted in the time domain after expressing it as a time vector. The choice to apply a Hamming window was made because it offers a good balance between reducing spectral leakage and maintaining frequency resolution, which is particularly important when analyzing signals that may contain closely spaced frequency components (National Instruments, n.d.).
 
 The Hamming window reduces spectral leakage, helping to more clearly distinguish the frequency components of the signal. After applying the Hamming window, the Fast Fourier Transform (FFT) was computed to convert the time-domain signal into the frequency domain. This allows for the analysis of the signal's spectral content.
 
-A frequency vector was created and centered at 0 Hz to aid in visualizing the frequency components accurately. Finally, the FFT result was shifted using fftshift to center the zero-frequency component, and the magnitude of the frequency components was plotted against frequency. This frequency-domain plot provides insight into the spectral characteristics of the multiplexed audio signal.
+A frequency vector was created and centred at 0 Hz to aid in visualizing the frequency components accurately. Finally, the FFT result was shifted using fftshift to centre the zero-frequency component, and the magnitude of the frequency components was plotted against frequency. This frequency-domain plot provides insight into the spectral characteristics of the multiplexed audio signal.
 
 #### Results
 ![Time Domain Plot For Multiplexed Signal](src/1.1-TimeDomainPlot.png)
-***Figure 1:** Recorded Audio Waveform in the Time Domain. This plot represents the amplitude of the noisy multiplexed audio signal over a 20-second time span, visualizing the time-domain behavior of the signal.*
+***Figure 1:** Recorded Audio Waveform in the Time Domain. This plot represents the amplitude of the noisy multiplexed audio signal over a 20-second time span, visualizing the time-domain behaviour of the signal.*
 ![Frequency Domain Plot For Multiplexed Signal](src/1.1-FrequencyDomainPlot.png)
 
 ***Figure 2:*** *Frequency Domain Plot of the Multiplexed Audio Signal. This plot shows the magnitude of the signal's frequency components, providing insight into the spectral characteristics of the signal after applying a Hamming window and computing the FFT.*
@@ -89,7 +89,7 @@ The aim of this analysis is to demodulate the multiplexed audio signals identifi
 #### Method
 A demultiplexing system was employed to identify and isolate carrier frequencies from the composite signal. After detecting the carrier frequencies, each associated signal was demodulated using a combination of the Hilbert transform and a bandpass filter tailored to the audio bandwidth specifications. Here's why these methods were chosen:
 
-1. **Carrier Frequency Detection**: Carrier frequencies were detected using a peak detection method on the Fourier-transformed signal. This approach helps in identifying the precise frequencies where the signal components are concentrated, which are necessary for accurate demodulation. An example how this was implemented is as below.
+1. **Carrier Frequency Detection**: Carrier frequencies were detected using a peak detection method on the Fourier-transformed signal. This approach helps in identifying the precise frequencies where the signal components are concentrated, which are necessary for accurate demodulation. An example of how this was implemented is as below.
 
 ```matlab
 systemA = abs(fft_shifted_center);
@@ -138,23 +138,23 @@ The combination of these techniques ensures that each demodulated signal is clea
 
 #### Analysis
 - **Audio Quality**: Listening tests for each demodulated signal (as referenced in Figures 4 to 8) indicate a significant improvement in audio clarity, with a reduction in background noise musical tones.
-- **Residual Noises**: Some residual noises that match the noise spectrum modeled in **Figure 1** of Section 1.1 are still present. These are likely artifacts from the original noising process and the carrier modulation. In particular the single tone noise.
+- **Residual Noises**: Some residual noises that match the noise spectrum modelled in **Figure 1** of Section 1.1 are still present. These are likely artifacts from the original noising process and the carrier modulation. In particular the single tone noise.
 - **Time and Frequency Domain Insights**:
   - The time domain plots (top graphs in Figures 4 to 8) show the waveform's amplitude variations over time, which are smooth and consistent, suggesting effective demodulation.
   - The frequency domain plots (bottom graphs in Figures 4 to 8) demonstrate clean spectral lines with the absence of high-frequency noise, indicating successful removal of the carrier frequencies and isolation of the audio signal.
 - **Effectiveness of Demodulation**: The clarity in the frequency domain across all demodulated signals confirms that the carrier frequencies have been effectively removed, validating the demodulation process.
 
-The analysis confirms that the demodulation process has successfully isolated each audio signal, reducing noise and improving audio quality. The persistence of some noise elements as originally modeled suggests areas for further refinement in the demultiplexing system or noise reduction techniques.
+The analysis confirms that the demodulation process has successfully isolated each audio signal, reducing noise and improving audio quality. The persistence of some noise elements as originally modelled suggests areas for further refinement in the demultiplexing system or noise reduction techniques.
 
 ### 1.3 Modeling Frequency-Dependent Distortion
 
 #### Objective
 To model the frequency-dependent distortion introduced by a communication channel, characterized as a Linear Time-Invariant (LTI) system. The output \( y(t) \) is the convolution of the input signal \( x(t) \) with the channel's impulse response \( h(t) \):
 \[ y(t) = x(t) * h(t) \]
-We use the function `channel(sid, x, fs)` to simulate this behavior in a controlled environment.
+We use the function `channel(sid, x, fs)` to simulate this behaviour in a controlled environment.
 
 #### Method
-To accurately characterize the channel's impulse response \( h(t) \), we require a test signal \( x(t) \) that can effectively probe the channel's behavior across its operational bandwidth. While the Dirac delta function \( \delta(t) \) is ideal mathematically for its ability to reproduce the impulse response directly due to its sifting property:
+To accurately characterize the channel's impulse response \( h(t) \), we require a test signal \( x(t) \) that can effectively probe the channel's behaviour across its operational bandwidth. While the Dirac delta function \( \delta(t) \) is ideal mathematically for its ability to reproduce the impulse response directly due to its sifting property:
 \[ \delta(t) * h(t) = h(t) \]
 it is impractical in real-world applications due to its infinite amplitude at \( t = 0 \) and zero elsewhere, making it impossible to physically generate.
 
@@ -162,7 +162,7 @@ Instead, a **chirp signal** is chosen:
 \[ x(t) = \sin\left(2\pi f(t) t\right) \]
 where \( f(t) \) linearly increases from 0 to \( \frac{fs}{2} \) over the duration of the signal. This chirp sweeps through all the frequencies in the desired range, allowing us to analyze how the channel affects different frequencies.
 
-Mathematically, the chirp signal's interaction with the channel provides a comprehensive view of the frequency-dependent behavior:
+Mathematically, the chirp signal's interaction with the channel provides a comprehensive view of the frequency-dependent behaviour:
 \[ y(t) = (\sin(2\pi f(t) t) * h(t) \]
 This convolution shows how the amplitude and phase of each frequency component are modified by \( h(t) \), giving a detailed picture of the channel's characteristics.
 
@@ -183,17 +183,17 @@ The analysis involved transmitting a chirp signal through the channel and measur
 - **Frequency-Domain Analysis**:
   - The frequency response plot (Figure 9) reveals multiple peaks and troughs, indicating resonant frequencies where the channel amplifies the signal and other frequencies where it attenuates the signal.
   - These variations in the frequency response can be linked to physical or electronic characteristics of the channel, such as capacitive, inductive, or resistive elements that differentially affect signal components.
-  - Notably, there are significant deviations from a flat response, which would indicate a perfectly linear channel. This suggests that the channel has a complex response that could potentially introduce artifacts or coloration into transmitted signals.
+  - Notably, there are significant deviations from a flat response, which would indicate a perfectly linear channel. This suggests that the channel has a complex response that could potentially introduce artifacts or colouration into transmitted signals.
 
 #### Limitations
-- **Time Resolution**: The finite length of the chirp limits the time resolution available for analyzing the channel's response, potentially smoothing over rapid changes in channel behavior.
+- **Time Resolution**: The finite length of the chirp limits the time resolution available for analyzing the channel's response, potentially smoothing over rapid changes in channel behaviour.
 - **Frequency Resolution**: The chirp covers a wide frequency range but at the cost of precision in identifying the exact frequency at which certain phenomena occur, especially for very sharp resonances or notches.
-- **Assumptions of Linearity**: The analysis assumes the channel behaves linearly, which the time-domain output signal suggests may not be entirely accurate. Nonlinear behaviors require different analytical approaches or signal processing techniques to fully characterize.
+- **Assumptions of Linearity**: The analysis assumes the channel behaves linearly, which the time-domain output signal suggests may not be entirely accurate. Nonlinear behaviours require different analytical approaches or signal processing techniques to characterize fully.
 
 ### 1.4 & 1.5 Noise Reduction Application
 
 #### Objective
-The objective of this task is to apply modeled inverse channel distortions to reduce noise in multiplexed audio signals, followed by the removal of remaining single-tone noises using notch filters, in order to improve the overall audio clarity. 
+The objective of this task is to apply modelled inverse channel distortions to reduce noise in multiplexed audio signals, followed by the removal of remaining single-tone noises using notch filters, in order to improve the overall audio clarity. 
 
 The two main goals are:
 1. Reverse the distortions caused by the channel to restore the original signal.
@@ -224,7 +224,7 @@ After applying the inverse filter, some high-pitched single-tone noise may still
 
 3. **Low-Pass Filtering**: To remove any residual high-frequency content, the envelope is passed through a **low-pass FIR filter**, which suppresses frequencies above 3000 Hz, ensuring that only the audio-relevant frequencies are retained.
 
-4. **Notch Filtering for Noise Removal**: **Notch filters** are applied at the detected noise frequencies, effectively eliminating the high-pitched single-tone noises without affecting the surrounding frequencies. The notch filters are designed as bandstop IIR filters with a narrow stopband centered on the detected noise frequencies.
+4. **Notch Filtering for Noise Removal**: **Notch filters** are applied at the detected noise frequencies, effectively eliminating the high-pitched single-tone noises without affecting the surrounding frequencies. The notch filters are designed as bandstop IIR filters with a narrow stopband centred on the detected noise frequencies.
 
 5. **Dynamic Range Compression**: After noise removal, **dynamic range compression** is applied to balance the audio signal's amplitude. This process ensures that the loudest parts of the audio do not exceed a certain threshold, while quieter parts are amplified, producing a more consistent audio output.
 
@@ -260,11 +260,11 @@ The following are the time-domain and frequency-domain visualizations of the pro
 
 - **Noise Reduction Efficacy**: The combined approach of inverse filtering and single-tone noise removal significantly improved the audio quality, reducing background noise and artifacts while maintaining the integrity of the original signal. The effectiveness of the noise reduction can be seen in both the time and frequency domains for all carrier frequencies.
 
-- **Residual Noise**: While the overall noise reduction is substantial, some residual low-level noise may still be present in certain frequencies, particularly in regions where the signal strength is weaker. However, the presence of such noise is minimal and does not significantly affect the overall audio quality. In some case the tone is still persistent meaning it was not entirely effective. The playback of the audio signals can be done via a application built for this task `Audio Playback App`.
+- **Residual Noise**: While the overall noise reduction is substantial, some residual low-level noise may still be present in certain frequencies, particularly in regions where the signal strength is weaker. However, the presence of such noise is minimal and does not significantly affect the overall audio quality. In some cases, the tone is still persistent meaning it was not entirely effective. The playback of the audio signals can be done via an application built for this task `Audio Playback App`.
 
 #### Conclusion
 
-The noise reduction process, which involved inverse filtering and the removal of single-tone noise, has been effective in enhancing the quality of the multiplexed audio signals. The processed signals now exhibit smooth waveforms in the time domain and clean spectra in the frequency domain, indicating successful suppression of unwanted noise components, however in some recordings still persistence of the single tone noise is evident. Thus other filtering techniques may be required.
+The noise reduction process, which involved inverse filtering and the removal of single-tone noise, has been effective in enhancing the quality of the multiplexed audio signals. The processed signals now exhibit smooth waveforms in the time domain and clean spectra in the frequency domain, indicating successful suppression of unwanted noise components, however in some recordings still persistence of the single-tone noise is evident. Thus other filtering techniques may be required.
 
 ---
 
@@ -289,7 +289,7 @@ The expression obtained from multiplying the motor's transfer function by the un
 \[
 \frac{K_m}{s^2(s + \alpha)}
 \]
-was simplified using partial fractions. The inverse Laplace transform of each term in the partial fraction decomposition was calculated to obtain the time-domain response, \( \psi_{out}(t) \). Resultantly, the system response can be modeled as such:
+was simplified using partial fractions. The inverse Laplace transform of each term in the partial fraction decomposition was calculated to obtain the time-domain response, \( \psi_{out}(t) \). Resultantly, the system response can be modelled as such:
 \[
 \psi_{out} = -4 + 2t + 4e^{-0.5t}
 \]
@@ -298,7 +298,7 @@ was simplified using partial fractions. The inverse Laplace transform of each te
 A time vector \( t \) was generated using `linspace` to produce \( 10^4 \) evenly spaced samples over the interval from 0 to 20 seconds. The step response \( \psi_{out}(t) \) was computed over this time vector using the derived time-domain formula.
 
 **Plotting was performed:**
-The step response \( \psi_{out}(t) \) was plotted alongside the step input to visually compare the system's output behavior to the constant input voltage. Plotting tools that supported annotations and grid lines were utilized to enhance the readability and interpretation of the plot.
+The step response \( \psi_{out}(t) \) was plotted alongside the step input to visually compare the system's output behaviour to the constant input voltage. Plotting tools that supported annotations and grid lines were utilized to enhance the readability and interpretation of the plot.
 
 This approach provided a systematic exploration of the servo motor's capability to effectively control the yaw angle of a Mars rover’s camera, highlighting areas requiring potential enhancements.
 
@@ -307,7 +307,7 @@ This approach provided a systematic exploration of the servo motor's capability 
 ***Figure 15:** This graph displays the comparison between the step input and the step response over a time interval of 0 to 20 seconds. The step input, represented as a dashed line, remains constant throughout the period, illustrating the constant voltage applied to the servo motor. The solid line depicts the step response, \( \psi_{out}(t) \), which shows the yaw angle of the camera as it evolves over time due to the applied input voltage. The response increases proportionally with time indicated by its linearity.*
 
 #### Analysis
-The response in *Figure 15* clearly illustrates that under a constant input voltage, the camera's yaw angle \( \psi_{out}(t) \) does not converge to a constant value. Instead, it continues to increase linearly with time.The linear behavior of the response suggests that there is no damping or stabilizing mechanism inherent in the system that would cause the yaw angle to level off or stabilize at a certain point, which could be necessary for precise control and positioning of the camera. Given that the yaw angle does not stabilize, additional control mechanisms, such as feedback systems or damping components, might be required to achieve desired control objectives like reaching and maintaining a specific yaw angle. The system as modeled might be insufficient for tasks that require the camera to fix on a particular target or to perform sweeps and then hold at a specific view, indicating the potential need for revising the motor control strategy or incorporating other elements like sensors and feedback loops. 
+The response in *Figure 15* clearly illustrates that under a constant input voltage, the camera's yaw angle \( \psi_{out}(t) \) does not converge to a constant value. Instead, it continues to increase linearly with time. The linear behaviour of the response suggests that there is no damping or stabilizing mechanism inherent in the system that would cause the yaw angle to level off or stabilize at a certain point, which could be necessary for precise control and positioning of the camera. Given that the yaw angle does not stabilize, additional control mechanisms, such as feedback systems or damping components, might be required to achieve desired control objectives like reaching and maintaining a specific yaw angle. The system as modelled might be insufficient for tasks that require the camera to fix on a particular target or to perform sweeps and then hold at a specific view, indicating the potential need for revising the motor control strategy or incorporating other elements like sensors and feedback loops. 
 
 ### 2.2 Feedback System Integration
 
@@ -319,7 +319,7 @@ To model the feedback system, a potentiometer was added to provide feedback on t
 \[
 G_m(s) = \frac{K_m}{s(s + \alpha)}
 \]
-where \( K_m = 1 \) and \( \alpha = 0.5 \). The feedback from the potentiometer, modeled as \( H_p(s) = K_{pot} = 1 \), was used to adjust the motor’s input by measuring the yaw angle displacement. The closed-loop transfer function for the system became:
+where \( K_m = 1 \) and \( \alpha = 0.5 \). The feedback from the potentiometer, modelled as \( H_p(s) = K_{pot} = 1 \), was used to adjust the motor’s input by measuring the yaw angle displacement. The closed-loop transfer function for the system became:
 \[
 F(s) = \frac{G_m(s)}{1 + G_m(s) \cdot H_p(s)}
 \]
@@ -335,7 +335,7 @@ Comparing the open-loop and feedback systems shows the effectiveness of adding t
 
 - **Without Feedback (Figure 15):** The yaw angle increases linearly and does not stabilize, indicating the system lacks any self-correction mechanism. This makes it unsuitable for controlling angular displacement, as the camera will continue to rotate indefinitely after a step input.
 
-- **With Feedback (Figure 16):** The feedback system, however, introduces damping and control over the yaw angle. The feedback helps the system correct its response and stabilize the yaw angle at the desired value. Although there is some initial overshoot and oscillation, the system eventually settles at the target angle. This behavior makes the feedback system far more suitable for precise control of the Mars rover’s camera, ensuring that it can lock onto and maintain a specific orientation.
+- **With Feedback (Figure 16):** The feedback system, however, introduces damping and control over the yaw angle. The feedback helps the system correct its response and stabilize the yaw angle at the desired value. Although there is some initial overshoot and oscillation, the system eventually settles at the target angle. This behaviour makes the feedback system far more suitable for precise control of the Mars rover’s camera, ensuring that it can lock onto and maintain a specific orientation.
 
 Overall, the feedback system is critical for ensuring stable and controlled operation of the camera’s angular displacement. The oscillations introduced by the feedback loop represent the system’s ability to correct itself over time, achieving stability, which was not possible with the open-loop system.
 
@@ -362,7 +362,7 @@ The table below summarizes the key dynamic properties of the feedback system:
 | **Parameter**                | **Value**              | **Description**                                                 |
 |------------------------------|------------------------|-----------------------------------------------------------------|
 | Natural Frequency (\( \omega_n \))  | 1.00 rad/s            | The system oscillates with this frequency in the absence of damping. |
-| Damping Ratio (\( \zeta \))        | 0.25                  | The system is underdamped, indicating oscillatory behavior.        |
+| Damping Ratio (\( \zeta \))        | 0.25                  | The system is underdamped, indicating oscillatory behaviour.        |
 | Time to Peak (\( T_p \))            | 3.24 seconds          | Time taken to reach the first peak of overshoot.                  |
 | Settling Time (\( T_s \))           | 16.00 seconds         | Time taken for the system to settle within 2% of the final value.  |
 | Percentage Overshoot (\( \%OS \))   | 44.43%                | The amount the system overshoots its target value.                |
@@ -370,7 +370,7 @@ The table below summarizes the key dynamic properties of the feedback system:
 #### Analysis
 The feedback system, while introducing stabilization to the yaw angle, exhibits significant oscillations, as evidenced by the high percentage overshoot of 44.43%. The system's dynamics are as follows:
 
-- **Underdamped Behavior**: With a damping ratio \( \zeta = 0.25 \), the system is underdamped, meaning it exhibits oscillations before reaching a steady state. The overshoot and oscillations, though damped over time, could cause the camera to temporarily exceed its desired angular position.
+- **Underdamped behaviour**: With a damping ratio \( \zeta = 0.25 \), the system is underdamped, meaning it exhibits oscillations before reaching a steady state. The overshoot and oscillations, though damped over time, could cause the camera to temporarily exceed its desired angular position.
   
 - **Time to Peak**: The system takes approximately 3.24 seconds to reach its first peak. This delay, coupled with the high overshoot, may result in the camera taking longer to stabilize when fine-tuning its position.
 
@@ -441,7 +441,7 @@ The simulation results confirmed that the system could now effectively sweep the
 ***Figure 18:** Improved Step Response of the Camera Control System showcasing the capability to reach over \(2\pi\) radians within 20 seconds, tailored for panoramic sweeps.*
 
 #### Analysis
-The analysis of the step response and the system's overall behavior with the adjusted gains indicated several key points:
+The analysis of the step response and the system's overall behaviour with the adjusted gains indicated several key points:
 - **System Responsiveness:** The increased \( K_{fwd} \) effectively shortened the time required for the camera to reach the full rotational range, addressing the initial sluggishness observed in prior configurations.
 - **Stability and Control:** The feedback gain \( K_{fb} \) ensured that despite the increased speed, the system remained stable without significant overshoots or oscillations, crucial for maintaining image clarity during movement.
 - **Operational Efficiency:** The system meets the operational requirements for capturing panoramic views on Mars, with a motion profile that aligns well with the camera's specifications to avoid motion blur.
@@ -565,7 +565,7 @@ The analysis was conducted using the transfer functions of the four filters:
 3. **Active Filter 1**: A second-order band-pass filter.
 4. **Active Filter 2**: A second-order low-pass filter.
 
-The general form of the transfer functions for the filters were derived based on their circuit configurations and component values:
+The general form of the transfer functions for the filters was derived based on their circuit configurations and component values:
 
 - **Passive Filter 1:**
   \[
@@ -682,6 +682,11 @@ The successful noise reduction and voltage calibration processes are pivotal for
 
 ### Teamwork & Collaboration
 *Reflect on teamwork and collaboration during the project.*
+
+#### Jack
+In completing this task, I acquired a greater understanding of signal processing and the effects of noise audio signal demodualisation. I've particularly learnt about the distortion of signals and how it can be caused by clipping when volume is increased through extensive waveform and frequency analysis. I did however struggle significantly with the coding side of the project and my contribution to the task was limited to the analysis of plots and audio signals that my group members generated. Due to me mainly analysing the plots, I found that I began to recognise trends more easily.
+
+If I was to work on a project like this again, I would go into the assignment with more prior coding knowledge so that I can contribute in a more meaningful and efficient way. There were times where I would have liked to work on the report but I didn't have the skills to generate plots for analysis. Communication between my fellow group members was productive and we always kept eachother in the loop about what content we were working on. We also stored our project files on a GitHub repository so that we could regularly and easily update our report and coding files. In hindsight, we could have organised more meetings/video calls for more focused communication but it wasn't crucial in the end.
 
 ---
 
@@ -1077,7 +1082,7 @@ end
 % Channel Analysis App
 % Description:
 % The Channel Analysis App allows users to generate various types of test signals,
-% transmit them through a modeled communication channel, and analyze the results.
+% transmit them through a modelled communication channel, and analyze the results.
 % The app supports time-domain and frequency-domain signal visualization, with
 % options for customizing signal properties, including duration, signal type,
 % and integer parameters such as the number of sinusoids or PRBS order.
