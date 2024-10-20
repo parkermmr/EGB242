@@ -512,17 +512,41 @@ The quality of the image as received is suboptimal for detailed analysis due to 
 
 Given the current state of the image, it is recommended to conduct a more detailed analysis using advanced image processing techniques to filter out noise and enhance the image. This process should be repeated with subsequent images to ensure consistent improvements in image quality for mission-critical decisions.
 
-
 ### 3.2 Signal Analysis
 
 #### Objective
-Analyze the image signal in time and frequency domains.
+The aim of this analysis is to examine the received image data of a potential Mars landing site in both time and frequency domains to understand the characteristics of the signal and identify any noise components affecting the data.
 
 #### Method
-Construct and plot the necessary vectors.
+The analysis involved constructing time and frequency vectors for the received signal of the image. This allowed us to visualize and assess how the image data is represented in these domains:
+
+- **Time Domain Analysis**: A time vector was created to plot pixel intensity values against time, reflecting how data is received over the transmission period.
+- **Frequency Domain Analysis**: A frequency vector was generated using the Fourier Transform of the image data to observe the distribution of signal energy across different frequencies.
 
 #### Results
-Identify noise components and their characteristics.
+Upon examining the plots:
+
+- **Time Domain Representation**:
+  - The plot shows a relatively stable signal with minor fluctuations in pixel intensity, indicating a stable transmission with low-level noise.
+  - A sharp spike is observed towards the end, which could indicate a transmission error or an anomaly in data capture or processing.
+  - ![Time Domain Representation of Received Image Data](Figures/3.2_Time_Domain_Images_Recieved.png)
+  *Figure 21: Time Domain Representation of Received Image Data*
+
+- **Frequency Domain Representation**:
+  - The majority of the signal's energy is concentrated at very low frequencies, which is typical for image data where major variations are gradual changes in intensity across the image.
+  - The presence of a significant peak at zero frequency suggests a DC component, which is common in image data representing the overall brightness of the image.
+  - Noise appears to be spread across the higher frequencies but is not dominant, indicating that the transmission channel is relatively clean with only minor noise interference.
+  - ![Frequency Domain Representation of Received Image Data](Figures/3.2_Frequency_Domain_Images_Recieved.png)
+  *Figure 22: Frequency Domain Representation of Received Image Data*
+
+#### Analysis
+- **Nature of the Noise**: The noise in the signal appears to be low-frequency and high-frequency white noise, which is commonly associated with electronic transmission systems. The high-frequency noise components are less intense, suggesting that they do not significantly impact the overall quality of the image.
+- **Frequency Range/Bandwidth of the Noise**: Noise is observed across a broad range of frequencies but is predominantly noticeable in the higher frequencies beyond approximately 50 Hz. This indicates that filtering techniques could be employed to clean up the image without affecting the primary content, which resides in the lower frequency band.
+
+- **Signal Characteristics**: The sharp spike in the time domain may need further investigation to ensure it does not represent a systematic error or artifact that could mislead analysis or interpretation of the landing site's imagery.
+
+Overall, the analysis confirms that while there is some noise present in the signal, the primary content of the image—representative of the Mars surface—is intact and predominantly clear of severe distortions. This suggests that the communication channel, despite minor imperfections, effectively transmits usable image data. Advanced filtering techniques could be employed to enhance the image further by reducing high-frequency noise.
+
 
 ### 3.3 Filter Selection
 
