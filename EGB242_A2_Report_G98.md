@@ -24,14 +24,13 @@
    - [3.1 Initial Image Analysis](#31-initial-image-analysis)
    - [3.2 Signal Analysis](#32-signal-analysis)
    - [3.3 Filter Selection](#33-filter-selection)
-   - [3.4 Noise Removal and Image Cleanup](#34-noise-removal-and-image-cleanup)
-   - [3.5 Full Image Set Processing](#35-full-image-set-processing)
-4. [Conclusion](#conclusion)
+   - [3.4 & 3.5 Noise Removal and Image Cleanup](#34--35-noise-removal-and-image-cleanup)
 5. [Reflection](#reflection)
    - [Learning & Understanding](#learning--understanding)
    - [Challenges & Limitations](#challenges--limitations)
    - [Future Improvements](#future-improvements)
    - [Teamwork & Collaboration](#teamwork--collaboration)
+   - [Individual Reflection](#individual-reflections)
 6. [References](#references)
 7. [Appendices](#appendices)
    - [Appendix A: MATLAB Source Code](#appendix-a-matlab-source-code)
@@ -40,6 +39,9 @@
          - [Signal Visualization App](#signal-visualization-app)
          - [Audio Playback App](#audio-playback-app)
       - [Section 2: Main Source Code](#section-2)
+      - [Section 3: Main Source Code](#section-3)
+         - [Filter Analysis App](#filter-analysis-app)
+         - [Image Filter App](#image-filter-app)
    - [Appendix B: Additional Material](#appendix-b-additional-material)
 
 ---
@@ -539,14 +541,14 @@ Upon examining the plots:
 - **Time Domain Representation**:
   - The plot shows a relatively stable signal with minor fluctuations in pixel intensity, indicating a stable transmission with low-level noise.
   - A sharp spike is observed towards the end, which could indicate a transmission error or an anomaly in data capture or processing.
-  - ![Time Domain Representation of Received Image Data](Figures/3.2_Time_Domain_Images_Recieved.png)
+  ![Time Domain Representation of Received Image Data](Figures/3.2_Time_Domain_Images_Recieved.png)
   ***Figure 21:** Time Domain Representation of Received Image Data*
 
 - **Frequency Domain Representation**:
   - The majority of the signal's energy is concentrated at very low frequencies, which is typical for image data where major variations are gradual changes in intensity across the image.
   - The presence of a significant peak at zero frequency suggests a DC component, which is common in image data representing the overall brightness of the image.
   - Noise appears to be spread across the higher frequencies but is not dominant, indicating that the transmission channel is relatively clean with only minor noise interference.
-  - ![Frequency Domain Representation of Received Image Data](Figures/3.2_Frequency_Domain_Images_Recieved.png)
+  ![Frequency Domain Representation of Received Image Data](Figures/3.2_Frequency_Domain_Images_Recieved.png)
   ***Figure 22:** Frequency Domain Representation of Received Image Data*
 
 #### Analysis
@@ -635,45 +637,81 @@ While Passive Filter 2 provides better attenuation than Passive Filter 1, neithe
 #### Conclusion
 After analyzing all four filters, **Active Filter 2** was selected as the most appropriate filter for removing noise from the communication channel. It provides effective high-frequency noise attenuation while preserving the integrity of the signal in the lower-frequency range, which is essential for ensuring clear image transmission from the Mars rover.
 
-### 3.4 Noise Removal and Image Cleanup
+### 3.4 & 3.5 Noise Removal and Image Cleanup
 
 #### Objective
-Apply the selected filter to clean the image signal.
+The objective of this section is to apply a series of image processing techniques to clean the image signal from unwanted noise, enhancing overall image clarity using mathematical transformations and filtering techniques.
 
 #### Method
-Implement the filtering process.
+The filtering and enhancement process involves several key mathematical operations that work together to reduce noise and improve the visual quality of the image.
+
+1. **Butterworth Low-Pass Filter Application**:
+   - **Purpose**: Reduces high-frequency noise while preserving the lower-frequency components of the image, which generally include the main features of interest.
+   - **Mathematical Description**: A Butterworth low-pass filter is defined by the formula:
+     \[
+     H(u, v) = \frac{1}{1 + \left(\frac{D(u, v)}{D_0}\right)^{2n}}
+     \]
+     where \( D(u, v) \) is the distance from the center of the frequency plane, \( D_0 \) is the cutoff frequency, and \( n \) is the order of the filter.
+   - **Implementation**:
+     - Create a meshgrid that represents the frequency domain.
+     - Calculate the Euclidean distance \( D \) from the center of the frequency plane.
+     - Apply the filter in the frequency domain using the formula.
+
+2. **Image Normalization**:
+   - **Purpose**: Scales the pixel values to a standard range of 0 to 1, facilitating further processing steps like contrast enhancement.
+   - **Operation**:
+     \[
+     \text{normalizedImage} = \frac{\text{filteredImage2D} - \min(\text{filteredImage2D})}{\max(\text{filteredImage2D}) - \min(\text{filteredImage2D})}
+     \]
+
+3. **Adaptive Histogram Equalization**:
+   - **Purpose**: Enhances the contrast of the image, particularly improving the visibility of features in darker regions.
+   - **Scientific Principle**: Uses a local histogram equalization approach that adapts to the content of local tiles in the image; different areas of the image get different adjustments based on their local histograms.
+   - **Settings**: `ClipLimit` set to `0.015` and `Distribution` set to `Rayleigh`, which are empirically determined parameters that control the degree of equalization.
+
+4. **Sharpening to Enhance Edges**:
+   - **Purpose**: Counteracts the blurring effects of the low-pass filter and enhances the visibility of edges, crucial for detailed visual analysis.
+   - **Operation**: The sharpening process is achieved through an unsharp masking technique, where an enhanced version of the image is subtracted from the original blurred image, emphasizing edges and transitions.
+   - **Parameters**: `Radius = 1`, `Amount = 1`, chosen to finely balance between edge enhancement and avoiding amplification of noise.
 
 #### Results
-Display the cleaned image and assess the removal of noise.
+The processed image demonstrates significant improvements in clarity, contrast, and sharpness, effectively mitigating the impact of noise while enhancing details necessary for accurate visual interpretation.
 
-### 3.5 Full Image Set Processing
+![Figure 27: Original and Filtered Image 1](Figures/Comparison_Image_1.png)
+***Figure 27:** Comparison of the original and filtered views of the first image set. The filtered image shows enhanced clarity and reduced noise, highlighting surface details that are crucial for assessing the terrain's suitability for the MARS-242 landing site.*
 
-#### Objective
-Repeat the noise removal process for all images.
+![Figure 28: Original and Filtered Image 2](Figures/Comparison_Image_2.png)
+***Figure 28:** The second set of images illustrates a significant reduction in visual noise and an improvement in terrain visibility, essential for navigating the landing equipment.*
 
-#### Method
-Factorize and implement the de-noising process.
+![Figure 29: Original and Filtered Image 3](Figures/Comparison_Image_3.png)
+***Figure 29:** This image set demonstrates the effectiveness of the filtering process in removing noise and enhancing the definition of geological features, potentially identifying safe landing zones.*
 
-#### Results
-Display cleaned images and provide landing site recommendations.
+![Figure 30: Original and Filtered Image 4](Figures/Comparison_Image_4.png)
+***Figure 30:** The final image set showcases a detailed and sharpened view of the landing site area, providing valuable insights into the surface conditions and topographical features.*
+
+#### Analysis
+The application of the Butterworth low-pass filter effectively removes high-frequency noise components, while the adaptive histogram equalization and sharpening steps restore and enhance the visual details lost during the initial filtering process. This comprehensive approach ensures that the image retains essential details with enhanced contrast, suitable for detailed examination or display. There is still some considerable noise components in the form of blur which may be filtered out through other methods.
+
+#### Reccomendation
+Based on the filtered and enhanced images, it is recommended to focus on the area depicted in Figure 30 as it shows clear terrain features with minimal obstructions, suggesting a relatively safe landing area. The enhanced visibility and detail allow for a better assessment of potential hazards and the overall suitability for the MARS-242 mission landing and operations.
 
 ---
 
 ## Conclusion
 
-*Summarize the key findings, the effectiveness of the noise removal and control systems, and any conclusions drawn from the project.*
+In conclusion, this assignment delved into the intricate processes of audio and visual data processing crucial for BASA exploration missions, specifically focusing on enhancing the quality of data transmitted from a Mars rover. The initial analysis of the audio signals revealed a broad amplitude range and a lack of periodicity, indicative of the complex and noisy environment of extraterrestrial communication channels. By applying a Hamming window to the signal, we effectively minimized spectral leakage, which facilitated a clearer identification of essential frequencies necessary for precise filtering and demodulation.
 
-This assignment revealed several key findings about audio and visual data processing:
+The implementation of inverse filtering techniques, coupled with targeted single-tone noise removal algorithms, significantly enhanced the clarity of the audio signals. This process involved designing filters that inversely mirror the identified noise characteristics within the frequency domain, thereby attenuating unwanted components while preserving the integrity of the original signal. Despite these improvements, some residual single-tone noise persisted, underscoring the need for more advanced filtering strategies. Future work could explore adaptive filtering methods or machine learning algorithms to further refine the audio signal quality, ensuring reliable communication channels for mission-critical data.
 
-The initial range of the signal's amplitudes and lack of periodicity demonstrated the complexity of the audio sources. Using a Hamming window minimized spectral leakage, making it easier to identify some of the frequencies essential for filtering and demodulation.
+In the realm of visual data processing, precise control of the rover's camera yaw angle was achieved through meticulous voltage adjustments. This calibration was vital to rectify discrepancies between the intended and actual camera angles, resulting in smooth and stable panoramic sweeps of the Martian landscape. Such adjustments are paramount for accurate terrain mapping and navigation, as they ensure that the imaging systems capture comprehensive and distortion-free visuals necessary for both scientific analysis and operational planning.
 
-Implementing inverse filtering and single-tone noise removal significantly enhanced the audio signal's quality. While there was still some single-tone noise residue, the need for additional filtering techniques was evident to achieve optimal results.
+The selection and application of filters for image enhancement were critical in mitigating high-frequency noise inherent in the transmission of images from the Mars rover. Among the four filters analyzed—comprising both passive and active configurations—Active Filter 2 demonstrated superior performance in reducing high-frequency noise components without sacrificing essential image details. This filter's design effectively attenuates frequencies beyond a specific cutoff point while maintaining a flat response within the passband, making it highly suitable for processing images where clarity and detail are paramount.
 
-When controlling the yaw angle, adjusted voltage settings effectively fixed any discrepancies with the camera angle, ensuring smooth panoramic sweeps. This calibration was crucial for stable, clear imaging from the Mars rover.
+By applying Active Filter 2, along with adaptive histogram equalization and sharpening techniques, we achieved significant improvements in image quality. The adaptive histogram equalization enhanced local contrast, bringing out subtle features in the terrain that are crucial for identifying safe landing sites and points of interest for exploration. The sharpening process further accentuated edges and fine details, compensating for any blurring effects introduced during noise reduction.
 
-Active Filter Selection: Among the four filters analyzed, Active Filter 2 proved to be the most effective for high-frequency noise reduction, whish is crucial for image transmission from the Mars rover.
+These advancements in noise reduction and image enhancement are pivotal for the success of the MARS-242 mission. High-quality audio and visual data enable better situational awareness and decision-making, directly impacting the planning and execution of the rover's activities on the Martian surface. The processed images provide clearer insights into the terrain's characteristics, facilitating the identification of optimal landing sites and navigation routes.
 
-The successful noise reduction and voltage calibration processes are pivotal for ongoing Mars exploration, enabling better planning and execution of the rover's activities. Further refinement and additional filtering techniques can always improve the transmissions and may address remaining noise issues. 
+In summary, the task underscored the importance of advanced signal processing techniques in overcoming the challenges posed by the harsh and noisy communication environment of space exploration. The methodologies implemented not only improved the immediate quality of the transmitted data but also laid the groundwork for future enhancements. Continued refinement of these techniques, possibly integrating adaptive or intelligent filtering mechanisms, will further enhance the reliability and clarity of data transmission in space missions, thereby supporting the overarching goals of exploration and discovery.
 
 ## Reflection
 ### Learning & Understanding
@@ -688,10 +726,22 @@ Future assignments could benefit from more advanced noise reduction techniques t
 ### Teamwork & Collaboration
 Communication between group members was consistently strong throughout the project. Shortly after the formation of our group, we organised a meeting to discuss our skills and expectations regarding the quality and workload. It was decided that we would regularly update the group on what sections were being worked on and let the team know early on if they were struggling with sections or wanted a second opinion on their contribution.
 
+### Individual Reflections
+
+#### Parker
+In reflection, I enjoyed the process of this assignment. I was able to extend myself in the realm of signal processing in ways I hadn't done in the past. My prior experience lended itself much more towards the transmission systems and control systems content rather than image processing. However, it gave me an opportunity to delve abit deeper into image processing than I have before. Coming from a RF, software background definetly aided in completing some of the content especially since I have rich background in software languages like Python and C++. Additionally, this unit is not my first exposure to MATLAB so through my understanding of the primary software in use and my other programttic experience I have; the base content was not a huge challenge. It was definitely a really good experience being able to develop my MATLAB coding skills which was particularly interesting building MATLAB based applications. I would however, given more time like to be able to pratically apply some of these skills and potentially dive abit deeper in to some of the transmission signals content. Its definitely opened my mind abit about leveraging MATLAB as a tool for self driven learning in the space, and I would be interested to see how it stacks up when dealing with more "real" signal processing such as live communication signals and decryption. This would be something I would definitely be open to exploring with some of my two way radios at home as a fun little task.
+
+I think as a group we tackled things relatively well. I never felt like I was signficantly displaced in terms of pacing which meant I always felt we would be able to get every task done to a reasonable degree. We used GitHub as version control tool which was a first for other members but they were able to tackle it rather well. I did my best to make it easy to contribute by creating a full starter and basic guide for the use of Git and some basic tools to streamline the process. This is a very deliberate decision as when working with code especially, the old dropbox or google drive just doesn't cut it. We also used Markdown with LaTeX to write the report which again was new to the other two, but was definitely cucial when dealing with the mathematical parts of the assignment. I think even though this was their first time they rose to the occasion and learnt how to use these tools effectively. If I could make one critique, the time management / communication of between some members lacked at some times. I also think potentially, although not my normal working process, working a little bit closer with the other two would of been a bit more beneficial, so they could learn some basic programatic skills which they had identified as a bit lacking. Working a bit closer might of helped with that time management component as well. That being said, from day dot we were all in communication with each other through the messaging application Signal and the group meeting application WebEx. Overall, I am rather happy with the turnout of this assignment and am definitely keen to continue learning some of the concepts explored in this task.
+
 #### Jack
 In completing this task, I acquired a greater understanding of signal processing and the effects of noise audio signal demodualisation. I've particularly learnt about the distortion of signals and how it can be caused by clipping when volume is increased through extensive waveform and frequency analysis. I did however struggle significantly with the coding side of the project and my contribution to the task was limited to the analysis of plots and audio signals that my group members generated. Due to me mainly analysing the plots, I found that I began to recognise trends more easily.
 
 If I was to work on a project like this again, I would go into the assignment with more prior coding knowledge so that I can contribute in a more meaningful and efficient way. There were times where I would have liked to work on the report but I didn't have the skills to generate plots for analysis. Communication between my fellow group members was productive and we always kept eachother in the loop about what content we were working on. We also stored our project files on a GitHub repository so that we could regularly and easily update our report and coding files. In hindsight, we could have organised more meetings/video calls for more focused communication but it wasn't crucial in the end.
+
+#### Deven
+During this assignment, I gained a deeper understanding of signal processing and the complexities of noise reduction in multiplexed audio signals. I learned about the impact of spectral leakage and how techniques like applying a Hamming window can clarify frequency components. Experimenting with various filtering methods showed me the importance of advanced noise reduction techniques and how to effectively use them. I found I struggled to fully understand some of the concepts and then struggled to comunicate them in code and writing. I feel I am not the most fluent in code but was with enough trial and failure I was able to move past that.
+
+Reflecting on this experience, if I were to tackle a similar project in the future, I would invest time in enhancing my coding knowledge and analytical writing beforehand. This would allow me to contribute more meaningfully and efficiently, particularly in with data generation and manipulation therefore reducing my group memebers workloads. As Jack mentioned we utilized a GitHub repository so we could push and pull eachothers work in order to collaborate effectively. At first it was a bit complicated getting used to new programs and methods of sharing, but after a while it became quite easy to use and help update eachother. Although there is always room for improvement, we did our best to communicate around eachother busy schedules in order to complete the task.
 
 ---
 
@@ -2347,6 +2397,728 @@ fprintf('Adjusted Start Voltage: %.2f V (for %.0f°)\n', startVoltage, startAngl
 fprintf('Adjusted End Voltage: %.2f V (for %.0f°)\n', endVoltage, endAngle_deg);
 fprintf('Mapped Start Angle: %.2f radians\n', startAngle_rad);
 fprintf('Mapped End Angle: %.2f radians\n', endAngle_rad);
+```
+#### Section 3
+```matlab
+%%%% EGB242 Assignment 2, Section 3 %%%%
+
+%% Initialize workspace
+clear all; close all; clc;
+
+load('DataA2.mat'); 
+
+if ~exist('imagesReceived', 'var')
+    error('Variable ''imagesReceived'' not found in the data file.');
+end
+
+%% 3.1 Initial Image Analysis
+
+numRows = 480;  
+numCols = 640;  
+
+% Extracted the first image data from the received signals
+firstImageData = imagesReceived(1, :);
+
+% Reshaped the 1D image data into a 2D matrix
+firstImage2D = reshape(firstImageData, [numRows, numCols]);
+
+% Displayed the first image
+figure;
+imshow(firstImage2D);
+title('First Received Image of Landing Site');
+
+% Saved the first image
+imwrite(firstImage2D, 'FirstLandingSiteImage.png');
+
+%% 3.2 Signal Analysis
+
+% Image dimensions and parameters
+numPixels = numRows * numCols; 
+sampleRate = 1000;
+
+% Time vector for the entire duration of one image
+t = linspace(0, numPixels / sampleRate, numPixels);
+
+% Frequency vector calculation
+f = linspace(-sampleRate/2, sampleRate/2, numPixels);
+
+% Plotted time-domain representation of received image data
+figure;
+plot(t, firstImageData);
+title('Time Domain Representation of Received Image Data');
+xlabel('Time (seconds)');
+ylabel('Pixel Intensity');
+
+% Performed Fourier Transform
+imageDataFFT = fftshift(fft(firstImageData));
+
+% Plotted frequency-domain representation
+figure;
+plot(f, abs(imageDataFFT));
+title('Frequency Domain Representation of Received Image Data');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+
+%% 3.3 Filter Selection
+
+% Launch the Image Filter App
+% For more information on the application please refer to ImageFilterApp.m
+ImageFilterApp;
+
+%% 3.4 Noise Removal using the Chosen Filter
+
+% Converted image to double precision for processing
+firstImage2D_double = double(firstImage2D);
+
+% Defined filter parameters
+filterOrder = 1; % Lower order to reduce blurring
+cutoffFrequency = 0.2; % Adjusted cutoff to preserve more details
+
+% Generated frequency grid for filtering
+[M, N] = size(firstImage2D_double);
+[U, V] = meshgrid(-floor(N/2):floor(N/2)-1, -floor(M/2):floor(M/2)-1);
+D = sqrt(U.^2 + V.^2); 
+D0 = cutoffFrequency * (min(M, N)/2);
+
+% Designed Butterworth low-pass filter
+H = 1 ./ (1 + (D ./ D0).^(2 * filterOrder));
+
+% Applied the filter in the frequency domain
+imageFFT = fftshift(fft2(firstImage2D_double)); 
+filteredFFT = imageFFT .* H; 
+filteredImage2D = real(ifft2(ifftshift(filteredFFT))); 
+
+% Normalized the filtered image to [0, 1]
+filteredImage2D = filteredImage2D - min(filteredImage2D(:));
+filteredImage2D = filteredImage2D / max(filteredImage2D(:));
+
+% Applied adaptive histogram equalization to enhance contrast
+filteredImage2D = adapthisteq(filteredImage2D, 'ClipLimit', 0.015, 'Distribution', 'rayleigh');
+
+% Sharpened the image to enhance edges
+sharpenedImage = imsharpen(filteredImage2D, 'Radius', 1, 'Amount', 1);
+
+% Displayed the original and processed images side by side
+figure;
+subplot(1,2,1);
+imshow(firstImage2D);
+title('Original Image');
+
+subplot(1,2,2);
+imshow(sharpenedImage);
+title('Filtered, Equalized, and Sharpened Image');
+
+% Saved the processed image
+imwrite(sharpenedImage, 'Filtered_Image.png');
+
+%% EXTRA
+
+% Run the ImageFilterApp for further experimentation
+ImageFilterApp;
+
+%% 3.5 Process All Images and Display Side by Side
+
+numImages = size(imagesReceived, 1); 
+
+for idx = 1:numImages
+    % Extracted the image data from the received signals
+    imageData = imagesReceived(idx, :);
+    
+    % Reshaped the 1D image data into a 2D matrix
+    image2D = reshape(imageData, [numRows, numCols]);
+    
+    % Converted image to double precision for processing
+    image2D_double = double(image2D);
+    
+    % Defined filter parameters
+    filterOrder = 1; 
+    cutoffFrequency = 0.2;
+    
+    % Generated frequency grid for filtering
+    [M, N] = size(image2D_double);
+    [U, V] = meshgrid(-floor(N/2):floor(N/2)-1, -floor(M/2):floor(M/2)-1);
+    D = sqrt(U.^2 + V.^2); 
+    D0 = cutoffFrequency * (min(M, N)/2); 
+    
+    % Designed Butterworth low-pass filter
+    H = 1 ./ (1 + (D ./ D0).^(2 * filterOrder));
+    
+    % Applied the filter in the frequency domain
+    imageFFT = fftshift(fft2(image2D_double)); 
+    filteredFFT = imageFFT .* H; 
+    filteredImage2D = real(ifft2(ifftshift(filteredFFT))); 
+    
+    % Normalized the filtered image to [0, 1]
+    filteredImage2D = filteredImage2D - min(filteredImage2D(:));
+    filteredImage2D = filteredImage2D / max(filteredImage2D(:));
+    
+    % Applied adaptive histogram equalization to enhance contrast
+    filteredImage2D = adapthisteq(filteredImage2D, 'ClipLimit', 0.015, 'Distribution', 'rayleigh');
+    
+    % Sharpened the image to enhance edges
+    sharpenedImage = imsharpen(filteredImage2D, 'Radius', 1, 'Amount', 1);
+    
+    figure('Visible', 'off'); 
+    subplot(1,2,1);
+    imshow(image2D);
+    title(['Original Image ' num2str(idx)]);
+    
+    subplot(1,2,2);
+    imshow(sharpenedImage);
+    title(['Filtered and Sharpened Image ' num2str(idx)]);
+    
+    saveas(gcf, ['Comparison_Image_' num2str(idx) '.png']);
+    close(gcf); 
+end
+```
+##### Filter Analysis App
+```matlab
+% Filter Analysis App
+% Description:
+% The Filter Analysis App allows users to select and analyze different types of filters 
+% (passive and active) based on their circuit configurations. The app generates the 
+% transfer function for each filter, computes its frequency response, and visualizes 
+% the results in terms of a Bode plot. The app also outputs the filter coefficients 
+% (numerator and denominator) for each selected filter.
+
+% Features:
+% - **Filter Selection:** Choose between four filter types: Passive Filter 1, Passive Filter 2, Active Filter 1, and Active Filter 2.
+% - **Filter Analysis:** The app computes and displays the transfer function of the selected filter and visualizes the Bode plot (magnitude and phase).
+% - **Coefficient Display:** The app calculates and displays the filter's numerator (b) and denominator (a) coefficients.
+% - **Frequency-Domain Visualization:** The Bode plot shows both the magnitude (in dB) and phase (in degrees) of the filter's frequency response.
+
+% How to Use:
+% 1. **Select Filter Type:** From the drop-down menu, choose a filter type (e.g., Passive Filter 1, Active Filter 1).
+% 2. **Analyze Filter:** Click the "Analyze Filter" button to compute the transfer function and visualize the filter's frequency response.
+% 3. **View Results:** The magnitude (in dB) and phase (in degrees) are plotted against frequency in the Bode plot. The coefficients of the filter are displayed in the text area.
+
+% Notes:
+% - The app uses pre-defined resistor and capacitor values for each filter to compute the transfer function.
+% - Filter coefficients are displayed in the output text area for further analysis or usage.
+% - Bode plots are generated for the selected filter, showing how the filter behaves in both the magnitude and phase domains.
+
+% Class FilterAnalysisApp < matlab.apps.AppBase
+% This class implements the UI and functionality for the Filter Analysis App, including
+% transfer function generation, frequency response visualization, and filter coefficient
+% calculation for four different types of filters (two passive and two active).
+
+classdef FilterAnalysisApp < matlab.apps.AppBase
+
+    properties (Access = public)
+        UIFigure                   matlab.ui.Figure
+        GridLayout                 matlab.ui.container.GridLayout
+        LeftPanel                  matlab.ui.container.Panel
+        FilterTypeDropDownLabel    matlab.ui.control.Label
+        FilterTypeDropDown         matlab.ui.control.DropDown
+        AnalyzeFilterButton        matlab.ui.control.Button
+        OutputTextAreaLabel        matlab.ui.control.Label
+        OutputTextArea             matlab.ui.control.TextArea
+        RightPanel                 matlab.ui.container.Panel
+        FrequencyResponseAxes      matlab.ui.control.UIAxes
+    end
+
+    methods (Access = private)
+
+        function startupFcn(app)
+            app.FilterTypeDropDown.Items = {'Passive Filter 1', 'Passive Filter 2', 'Active Filter 1', 'Active Filter 2'};
+            app.FilterTypeDropDown.Value = 'Passive Filter 1';
+        end
+
+        function AnalyzeFilterButtonPushed(app, ~)
+            try
+                % Get the selected filter type
+                filterType = app.FilterTypeDropDown.Value;
+        
+                % Get the filter coefficients based on the selected filter type
+                [b, a] = app.getFilterCoefficients(filterType);
+        
+                % Create the transfer function system
+                sys = tf(b, a);
+        
+                % Compute the Bode response
+                [mag, phase, w] = bode(sys); % mag and phase are 3D arrays
+        
+                % Squeeze mag and phase arrays to get 2D arrays
+                mag = squeeze(mag);
+                phase = squeeze(phase);
+        
+                % Clear the previous plot
+                cla(app.FrequencyResponseAxes);
+        
+                % Plot Magnitude on the top half of the axes
+                yyaxis(app.FrequencyResponseAxes, 'left');
+                plot(app.FrequencyResponseAxes, w, 20*log10(mag), 'b-', 'LineWidth', 2);
+                ylabel(app.FrequencyResponseAxes, 'Magnitude (dB)');
+                set(app.FrequencyResponseAxes, 'YColor', 'b');
+        
+                % Plot Phase on the bottom half of the axes
+                yyaxis(app.FrequencyResponseAxes, 'right');
+                plot(app.FrequencyResponseAxes, w, phase, 'r--', 'LineWidth', 2);
+                ylabel(app.FrequencyResponseAxes, 'Phase (degrees)');
+                set(app.FrequencyResponseAxes, 'YColor', 'r');
+        
+                % Set plot properties
+                xlabel(app.FrequencyResponseAxes, 'Frequency (rad/s)');
+                title(app.FrequencyResponseAxes, ['Bode Plot of ', filterType]);
+                grid(app.FrequencyResponseAxes, 'on');
+        
+                % Display the filter coefficients in the output text area
+                app.OutputTextArea.Value = ['Filter coefficients (b): ', mat2str(b), newline, ...
+                                            'Filter coefficients (a): ', mat2str(a)];
+            catch ME
+                app.OutputTextArea.Value = ['Error: ', ME.message];
+            end
+        end
+
+
+        function [b, a] = getFilterCoefficients(app, filterType)
+            switch filterType
+                case 'Passive Filter 1'
+                    % Passive Filter 1: RC High-pass and Low-pass combination
+                    R1 = 1.2e3; C1 = 10e-6; R2 = 1e3; C2 = 4.7e-6;
+                    a = [R1*C1*R2*C2, (R1*C1 + R2*C2), 1];
+                    b = [0, 0, 1];
+                case 'Passive Filter 2'
+                    % Passive Filter 2: Two-stage RC Low-pass filter
+                    R1 = 1.2e3; C1 = 10e-6; R2 = 1e3; C2 = 4.7e-6;
+                    a = [R1*C1*R2*C2, (R1*C1 + R2*C2), 1];
+                    b = [0, 1, 0];
+                case 'Active Filter 1'
+                    % Active Filter 1: Band-pass filter
+                    R = 820; C = 1e-6;
+                    b = [1, 0, 0];
+                    a = [1, 2/(R*C), 1/(R*C)^2];
+                case 'Active Filter 2'
+                    % Active Filter 2: Low-pass filter
+                    R = 820; C = 1e-6;
+                    b = [1/(R*C)^2];
+                    a = [1, 2/(R*C), 1/(R*C)^2];
+            end
+        end
+    end
+
+    methods (Access = private)
+
+        function createComponents(app)
+            % Create UIFigure and components
+            app.UIFigure = uifigure('Position', [100 100 700 500], 'Name', 'Filter Analysis App');
+            app.GridLayout = uigridlayout(app.UIFigure, [1 2]);
+
+            % Left Panel for Controls
+            app.LeftPanel = uipanel(app.GridLayout);
+            app.LeftPanel.Title = 'Controls';
+            app.LeftPanel.Layout.Row = 1;
+            app.LeftPanel.Layout.Column = 1;
+
+            % FilterType DropDown
+            app.FilterTypeDropDownLabel = uilabel(app.LeftPanel, 'Text', 'Select Filter Type:');
+            app.FilterTypeDropDownLabel.Position = [20 400 100 22];
+            app.FilterTypeDropDown = uidropdown(app.LeftPanel);
+            app.FilterTypeDropDown.Position = [130 400 150 22];
+
+            % Analyze Button
+            app.AnalyzeFilterButton = uibutton(app.LeftPanel, 'push', 'Text', 'Analyze Filter');
+            app.AnalyzeFilterButton.Position = [50 350 200 30];
+            app.AnalyzeFilterButton.ButtonPushedFcn = createCallbackFcn(app, @AnalyzeFilterButtonPushed, true);
+
+            % Output Text Area
+            app.OutputTextAreaLabel = uilabel(app.LeftPanel, 'Text', 'Filter Coefficients:');
+            app.OutputTextAreaLabel.Position = [20 300 150 22];
+            app.OutputTextArea = uitextarea(app.LeftPanel);
+            app.OutputTextArea.Position = [20 100 260 200];
+
+            % Right Panel for Frequency Response Plot
+            app.RightPanel = uipanel(app.GridLayout);
+            app.RightPanel.Title = 'Frequency Response';
+            app.RightPanel.Layout.Row = 1;
+            app.RightPanel.Layout.Column = 2;
+            app.FrequencyResponseAxes = uiaxes(app.RightPanel);
+            app.FrequencyResponseAxes.Position = [10 10 330 420];
+
+            startupFcn(app)
+        end
+    end
+
+    % App startup
+    methods (Access = public)
+        function app = FilterAnalysisApp
+            createComponents(app);
+            registerApp(app, app.UIFigure);
+            if nargout == 0
+                clear app
+            end
+        end
+
+        % App teardown
+        function delete(app)
+            delete(app.UIFigure);
+        end
+    end
+end
+```
+##### Image Filter App
+```matlab
+% Image Filter App
+% Description:
+% The Image Filter App allows users to apply different filtering techniques to enhance
+% the visibility of images received from a spacecraft. It supports the selection of
+% various filters, adjusting filter parameters, and comparing original and processed images.
+% The app emphasizes noise reduction, contrast enhancement, and edge sharpening.
+
+% Features:
+% - **Image Selection:** Users can load and select images received from the spacecraft.
+% - **Filter Application:** Apply Butterworth low-pass filters with customizable orders and cutoff frequencies.
+% - **Contrast Enhancement:** Utilize adaptive histogram equalization to enhance image contrast.
+% - **Edge Sharpening:** Apply a sharpening filter to enhance image edges and detail.
+% - **Side-by-Side Comparison:** Display original and processed images side by side for direct comparison.
+% - **Save Functionality:** Ability to save the enhanced images for further analysis or reporting.
+
+% How to Use:
+% 1. **Load Images:** Start the app which automatically loads the images from a pre-defined location.
+% 2. **Select Image:** Use the navigation controls to select different images for processing.
+% 3. **Adjust Filter Settings:** Modify the filter order and cutoff frequency to suit the specific needs of the image.
+% 4. **Apply Filters:** Click the "Apply Filter" button to process the selected image.
+% 5. **View Comparison:** Observe the side-by-side comparison of the original and filtered images.
+% 6. **Save Image:** Save the processed images by clicking the "Save Image" button.
+
+% Notes:
+% - The app is designed to handle images in a matrix format where each pixel's intensity is represented as a double-precision float.
+% - Filters are applied in the frequency domain using the Fourier Transform to enhance performance and effectiveness.
+% - Edge sharpening is performed after histogram equalization to ensure that contrast enhancements do not interfere with edge detection.
+
+% Class ImageFilterApp < matlab.apps.AppBase
+% This class implements the UI and functionality for the Image Filter App, including image loading,
+% filtering, enhancement, and saving processed images for different types of analysis.
+
+function ImageFilterApp
+
+    hFig = uifigure('Name', 'Image Filter App', 'Position', [100, 100, 1200, 600]);
+    
+    % Create Grid Layout
+    mainGrid = uigridlayout(hFig, [1, 2]);
+    mainGrid.ColumnWidth = {'1x', '2x'};
+    
+    % Create Left Panel for Controls
+    controlPanel = uipanel(mainGrid);
+    controlPanel.Title = 'Controls';
+    controlPanel.Layout.Row = 1;
+    controlPanel.Layout.Column = 1;
+    
+    % Create Right Panel for Plots
+    plotPanel = uipanel(mainGrid);
+    plotPanel.Title = 'Plots';
+    plotPanel.Layout.Row = 1;
+    plotPanel.Layout.Column = 2;
+    
+    % Controls Grid
+    controlGrid = uigridlayout(controlPanel, [15, 2]);
+    controlGrid.RowHeight = repmat({'fit'}, 1, 15);
+    controlGrid.ColumnWidth = {'fit', '1x'};
+    controlGrid.Padding = [10 10 10 10];
+    controlGrid.RowSpacing = 5;
+    
+    % Load Image Button
+    loadImageButton = uibutton(controlGrid, 'push', 'Text', 'Load Image', 'ButtonPushedFcn', @loadImage);
+    loadImageButton.Layout.Row = 1;
+    loadImageButton.Layout.Column = [1, 2];
+    
+    % Filter Type Dropdown
+    filterTypeLabel = uilabel(controlGrid, 'Text', 'Filter Type:');
+    filterTypeLabel.Layout.Row = 2;
+    filterTypeLabel.Layout.Column = 1;
+    
+    filterTypeDropdown = uidropdown(controlGrid, 'Items', {'Passive Filter 1', 'Passive Filter 2', 'Active Filter 1', 'Active Filter 2'});
+    filterTypeDropdown.Layout.Row = 2;
+    filterTypeDropdown.Layout.Column = 2;
+    filterTypeDropdown.ValueChangedFcn = @onFilterTypeChanged;
+    
+    % Filter Order Slider
+    filterOrderLabel = uilabel(controlGrid, 'Text', 'Filter Order:');
+    filterOrderLabel.Layout.Row = 3;
+    filterOrderLabel.Layout.Column = 1;
+    
+    filterOrderSlider = uislider(controlGrid, 'Limits', [1, 10], 'Value', 1);
+    filterOrderSlider.Layout.Row = 3;
+    filterOrderSlider.Layout.Column = 2;
+    filterOrderSlider.ValueChangedFcn = @onParameterChanged;
+    
+    % Cutoff Frequency Slider
+    cutoffFreqLabel = uilabel(controlGrid, 'Text', 'Cutoff Frequency (0.01 - 0.5):');
+    cutoffFreqLabel.Layout.Row = 4;
+    cutoffFreqLabel.Layout.Column = 1;
+    
+    cutoffFreqSlider = uislider(controlGrid, 'Limits', [0.01, 0.5], 'Value', 0.3);
+    cutoffFreqSlider.Layout.Row = 4;
+    cutoffFreqSlider.Layout.Column = 2;
+    cutoffFreqSlider.ValueChangedFcn = @onParameterChanged;
+    
+    % Component Values for Active Filters
+    RLabel = uilabel(controlGrid, 'Text', 'Resistance R (Ohms):');
+    RLabel.Layout.Row = 5;
+    RLabel.Layout.Column = 1;
+    
+    RField = uieditfield(controlGrid, 'numeric', 'Value', 820);
+    RField.Layout.Row = 5;
+    RField.Layout.Column = 2;
+    RField.ValueChangedFcn = @onParameterChanged;
+    
+    CLabel = uilabel(controlGrid, 'Text', 'Capacitance C (Farads):');
+    CLabel.Layout.Row = 6;
+    CLabel.Layout.Column = 1;
+    
+    CField = uieditfield(controlGrid, 'numeric', 'Value', 1e-6);
+    CField.Layout.Row = 6;
+    CField.Layout.Column = 2;
+    CField.ValueChangedFcn = @onParameterChanged;
+    
+    % Applied Filter Button
+    applyButton = uibutton(controlGrid, 'Text', 'Apply Filter', 'ButtonPushedFcn', @applyFilter);
+    applyButton.Layout.Row = 7;
+    applyButton.Layout.Column = [1, 2];
+    
+    % Axes for Original and Filtered Images
+    axesGrid = uigridlayout(plotPanel, [2, 2]);
+    axesGrid.RowHeight = {'1x', '1x'};
+    axesGrid.ColumnWidth = {'1x', '1x'};
+    axesGrid.Padding = [10 10 10 10];
+    axesGrid.RowSpacing = 10;
+    
+    % Original Image Axes
+    originalAxes = uiaxes(axesGrid);
+    originalAxes.Layout.Row = 1;
+    originalAxes.Layout.Column = 1;
+    title(originalAxes, 'Original Image');
+    
+    % Filtered Image Axes
+    filteredAxes = uiaxes(axesGrid);
+    filteredAxes.Layout.Row = 1;
+    filteredAxes.Layout.Column = 2;
+    title(filteredAxes, 'Filtered Image');
+    
+    % Original Frequency Domain Axes
+    originalFreqAxes = uiaxes(axesGrid);
+    originalFreqAxes.Layout.Row = 2;
+    originalFreqAxes.Layout.Column = 1;
+    title(originalFreqAxes, 'Original Frequency Domain');
+    
+    % Filtered Frequency Domain Axes
+    filteredFreqAxes = uiaxes(axesGrid);
+    filteredFreqAxes.Layout.Row = 2;
+    filteredFreqAxes.Layout.Column = 2;
+    title(filteredFreqAxes, 'Filtered Frequency Domain');
+    
+    % Disabled component fields for passive filters initially
+    RLabel.Enable = 'off';
+    RField.Enable = 'off';
+    CLabel.Enable = 'off';
+    CField.Enable = 'off';
+    
+    % Initialized image variables
+    firstImage2D = [];
+    imageLoaded = false;
+    
+    
+    function loadImage(src, event)
+        [file, path] = uigetfile({'*.png;*.jpg;*.jpeg;*.bmp;*.tif', 'Image Files'}, 'Select an Image');
+        if isequal(file, 0)
+            return; 
+        end
+        imagePath = fullfile(path, file);
+        img = imread(imagePath);
+        if size(img, 3) == 3
+            img = rgb2gray(img);
+        end
+        firstImage2D = double(img);
+        
+        % Normalize image data to [0, 1]
+        firstImage2D = firstImage2D - min(firstImage2D(:));
+        firstImage2D = firstImage2D / max(firstImage2D(:));
+        
+        % Displayed the original image
+        figure;
+        imshow(firstImage2D);
+        title('Original Image');
+        
+        % Displayed the image in the app
+        imshow(firstImage2D, 'Parent', originalAxes);
+        title(originalAxes, 'Original Image');
+        
+        % Plotted the original frequency domain
+        imageFFT = fftshift(fft2(firstImage2D));
+        magnitude = log(abs(imageFFT) + 1);
+        imshow(magnitude, [], 'Parent', originalFreqAxes);
+        colormap(originalFreqAxes, jet); colorbar(originalFreqAxes);
+        
+        % Clear the filtered image axes
+        cla(filteredAxes);
+        cla(filteredFreqAxes);
+        
+        imageLoaded = true;
+    end
+    
+    function onFilterTypeChanged(src, event)
+        selectedFilter = filterTypeDropdown.Value;
+        if strcmp(selectedFilter, 'Active Filter 1') || strcmp(selectedFilter, 'Active Filter 2')
+            % Enable component fields
+            RLabel.Enable = 'on';
+            RField.Enable = 'on';
+            CLabel.Enable = 'on';
+            CField.Enable = 'on';
+        else
+            % Disable component fields
+            RLabel.Enable = 'off';
+            RField.Enable = 'off';
+            CLabel.Enable = 'off';
+            CField.Enable = 'off';
+        end
+    end
+    
+    function applyFilter(src, event)
+        if ~imageLoaded
+            uialert(hFig, 'Please load an image first.', 'No Image Loaded');
+            return;
+        end
+        
+        % Get current parameter values
+        filterOrderValue = round(filterOrderSlider.Value);
+        cutoffFreqValue = cutoffFreqSlider.Value;
+        RValue = RField.Value;
+        CValue = CField.Value;
+        selectedFilter = filterTypeDropdown.Value;
+
+        switch selectedFilter
+            case 'Passive Filter 1'
+                % Implemented Passive Filter 1
+                filteredImage = applyPassiveFilter1(firstImage2D, filterOrderValue, cutoffFreqValue);
+            case 'Passive Filter 2'
+                % Implemented Passive Filter 2
+                filteredImage = applyPassiveFilter2(firstImage2D, filterOrderValue, cutoffFreqValue);
+            case 'Active Filter 1'
+                % Implemented Active Filter 1 (High-pass filter)
+                filteredImage = applyActiveFilter1(firstImage2D, RValue, CValue);
+            case 'Active Filter 2'
+                % Implemented Active Filter 2 (Low-pass filter)
+                filteredImage = applyActiveFilter2(firstImage2D, RValue, CValue, filterOrderValue, cutoffFreqValue);
+            otherwise
+                errordlg('Unknown filter type selected.', 'Error');
+                return;
+        end
+        
+        % Displayed the filtered image
+        figure;
+        imshow(filteredImage);
+        title(['Filtered Image using ', selectedFilter]);
+        
+        % Displayed the image in the app
+        imshow(filteredImage, 'Parent', filteredAxes);
+        title(filteredAxes, ['Filtered Image using ', selectedFilter]);
+        
+        % Plotted the filtered frequency domain
+        filteredFFT = fftshift(fft2(filteredImage));
+        magnitude = log(abs(filteredFFT) + 1);
+        imshow(magnitude, [], 'Parent', filteredFreqAxes);
+        colormap(filteredFreqAxes, jet); colorbar(filteredFreqAxes);
+        title(filteredFreqAxes, 'Filtered Frequency Domain');
+    end
+    
+    function onParameterChanged(src, event)
+        % Parameters are applied when 'Apply Filter' is clicked
+    end
+    
+    % Filter Implementation Functions
+    
+    function filteredImage = applyPassiveFilter1(imageData, order, cutoffFreq)
+        
+        [M, N] = size(imageData);
+        D0_low = cutoffFreq * (min(M, N)/2) * 0.8;
+        D0_high = cutoffFreq * (min(M, N)/2) * 1.2;
+        [U, V] = meshgrid(-floor(N/2):floor(N/2)-1, -floor(M/2):floor(M/2)-1);
+        D = sqrt(U.^2 + V.^2);
+        
+        H_low = 1 ./ (1 + (D ./ D0_low).^(2 * order));
+        H_high = 1 ./ (1 + (D0_high ./ (D + eps)).^(2 * order));
+        H = H_low .* H_high;
+        
+        imageFFT = fftshift(fft2(imageData));
+        filteredFFT = imageFFT .* H;
+        filteredImage = real(ifft2(ifftshift(filteredFFT)));
+        
+        % Normalized the image to [0, 1]
+        filteredImage = filteredImage - min(filteredImage(:));
+        filteredImage = filteredImage / max(filteredImage(:));
+    end
+    
+    function filteredImage = applyPassiveFilter2(imageData, order, cutoffFreq)
+
+        [M, N] = size(imageData);
+        D0_low = cutoffFreq * (min(M, N)/2) * 0.8;
+        D0_high = cutoffFreq * (min(M, N)/2) * 1.2;
+        [U, V] = meshgrid(-floor(N/2):floor(N/2)-1, -floor(M/2):floor(M/2)-1);
+        D = sqrt(U.^2 + V.^2);
+        
+        H_low = 1 ./ (1 + (D ./ D0_low).^(2 * order));
+        H_high = 1 ./ (1 + (D0_high ./ (D + eps)).^(2 * order));
+        H = 1 - (H_low .* H_high);
+        
+        imageFFT = fftshift(fft2(imageData));
+        filteredFFT = imageFFT .* H;
+        filteredImage = real(ifft2(ifftshift(filteredFFT)));
+        
+        % Normalized the image to [0, 1]
+        filteredImage = filteredImage - min(filteredImage(:));
+        filteredImage = filteredImage / max(filteredImage(:));
+    end
+    
+    function filteredImage = applyActiveFilter1(imageData, R, C)
+        
+        % Computed the cutoff frequency
+        fc = 1 / (2 * pi * R * C);
+        
+        % Converted cutoff frequency to normalized frequency
+        cutoffFreq = fc / (1 / (2 * min(size(imageData))));
+        
+        % Designed the Butterworth high-pass filter
+        [M, N] = size(imageData);
+        [U, V] = meshgrid(-floor(N/2):floor(N/2)-1, -floor(M/2):floor(M/2)-1);
+        D = sqrt(U.^2 + V.^2);
+        D0 = cutoffFreq * (min(M, N)/2);
+        
+        H = 1 ./ (1 + (D0 ./ (D + eps)).^(2));
+        
+        imageFFT = fftshift(fft2(imageData));
+        filteredFFT = imageFFT .* H;
+        filteredImage = real(ifft2(ifftshift(filteredFFT)));
+        
+        % Normalized the image to [0, 1]
+        filteredImage = filteredImage - min(filteredImage(:));
+        filteredImage = filteredImage / max(filteredImage(:));
+    end
+    
+    function filteredImage = applyActiveFilter2(imageData, R, C, order, cutoffFreq)
+        
+        % Computed the cutoff frequency
+        fc = 1 / (2 * pi * R * C);
+        
+        % Converted cutoff frequency to normalized frequency
+        cutoffFreq = fc / (1 / (2 * min(size(imageData))));
+        
+        % Designed the Butterworth low-pass filter
+        [M, N] = size(imageData);
+        [U, V] = meshgrid(-floor(N/2):floor(N/2)-1, -floor(M/2):floor(M/2)-1);
+        D = sqrt(U.^2 + V.^2);
+        D0 = cutoffFreq * (min(M, N)/2);
+        
+        H = 1 ./ (1 + (D ./ D0).^(2 * order));
+        
+        imageFFT = fftshift(fft2(imageData));
+        filteredFFT = imageFFT .* H;
+        filteredImage = real(ifft2(ifftshift(filteredFFT)));
+        
+        % Normalized the image to [0, 1]
+        filteredImage = filteredImage - min(filteredImage(:));
+        filteredImage = filteredImage / max(filteredImage(:));
+    end
+end
 ```
 
 ### Appendix B: Additional Material
