@@ -657,7 +657,17 @@ Display cleaned images and provide landing site recommendations.
 
 *Summarize the key findings, the effectiveness of the noise removal and control systems, and any conclusions drawn from the project.*
 
----
+This assigment revealed several key finding about audio and visual data processing:
+
+The initial signal's range of amplitudes and lack of periodicity highlighted the complexity of the audio sources. Applying a Hamming window minimized spectral leakage, clarifying some of the frequencies essential for filtering and demodulation.
+
+Inverse filtering and single-tone noise removal significantly improved the audio signal's quality. While some there was still some single-tone noise residue, the need for additional filtering techniques was evident to achieve optimal results.
+
+When controlling the yaw angle, adjusted voltage settings effectively fixed any discrepancies with the camera angle, ensuring smooth panoramic sweeps. This calibration was crucial for stable, clear imaging from the Mars rover.
+
+Active Filter Selection: Among the four filters analyzed, Active Filter 2 emerged as the most effective for high-frequency noise reduction, crucial for the image transmission from the Mars rover.
+
+The successful noise reduction and voltage calibration processes are pivotal for ongoing Mars exploration, enabling better planning and execution of the rover's activities. Further refinement and additional filtering techniques can always improve the tranmissions and may address remaining noise issues.
 
 ## Reflection
 
