@@ -674,11 +674,18 @@ The successful noise reduction and voltage calibration processes are pivotal for
 ### Learning & Understanding
 *Summarize key learnings from the project.*
 
+Learning & Understanding
+As a group we leart the importance of precise signal processing techniques to enhance data quality, The application of Hamming windows effectively reduced spectral leakage of our signal, revealing critical frequency components. It was evident that the use of noise reduction methods like inverse filtering improved audio signal clarity, highlighting the need for advanced filtering techniques.
+
 ### Challenges & Limitations
 *Discuss the main challenges and limitations faced.*
 
+Some of the significant challenges we faced during the project included dealing with persistent single-tone noise despite initial filtering efforts, this noise could be addressed with future improvements. Another contraint we faced was the 18° discrepancy in the camera's angular placement, this required meticulous voltage calibration. Limitations arose from the need for more sophisticated filtering methods to completely eliminate noise and enhance image clarity for accurate analysis.
+
 ### Future Improvements
 *Propose potential improvements for future projects.*
+
+Future assignments could benefit from using more advanced noise reduction techniques to reduce the remaining single-tone noise discrepencies. Enhancing voltage calibration methods could also further improve the accuracy of the rovers panoramic sweeps. Even exploring new filtering technologies may provide more precise solutions for maintaining signal integrity across various frequencies similar to what we used.
 
 ### Teamwork & Collaboration
 *Reflect on teamwork and collaboration during the project.*
