@@ -663,18 +663,35 @@ Display cleaned images and provide landing site recommendations.
 
 *Summarize the key findings, the effectiveness of the noise removal and control systems, and any conclusions drawn from the project.*
 
----
+This assigment revealed several key finding about audio and visual data processing:
+
+The initial signal's range of amplitudes and lack of periodicity highlighted the complexity of the audio sources. Applying a Hamming window minimized spectral leakage, clarifying some of the frequencies essential for filtering and demodulation.
+
+Inverse filtering and single-tone noise removal significantly improved the audio signal's quality. While some there was still some single-tone noise residue, the need for additional filtering techniques was evident to achieve optimal results.
+
+When controlling the yaw angle, adjusted voltage settings effectively fixed any discrepancies with the camera angle, ensuring smooth panoramic sweeps. This calibration was crucial for stable, clear imaging from the Mars rover.
+
+Active Filter Selection: Among the four filters analyzed, Active Filter 2 emerged as the most effective for high-frequency noise reduction, crucial for the image transmission from the Mars rover.
+
+The successful noise reduction and voltage calibration processes are pivotal for ongoing Mars exploration, enabling better planning and execution of the rover's activities. Further refinement and additional filtering techniques can always improve the tranmissions and may address remaining noise issues. 
 
 ## Reflection
 
 ### Learning & Understanding
 *Summarize key learnings from the project.*
 
+Learning & Understanding
+As a group we leart the importance of precise signal processing techniques to enhance data quality, The application of Hamming windows effectively reduced spectral leakage of our signal, revealing critical frequency components. It was evident that the use of noise reduction methods like inverse filtering improved audio signal clarity, highlighting the need for advanced filtering techniques.
+
 ### Challenges & Limitations
 *Discuss the main challenges and limitations faced.*
 
+Some of the significant challenges we faced during the project included dealing with persistent single-tone noise despite initial filtering efforts, this noise could be addressed with future improvements. Another contraint we faced was the 18° discrepancy in the camera's angular placement, this required meticulous voltage calibration. Limitations arose from the need for more sophisticated filtering methods to completely eliminate noise and enhance image clarity for accurate analysis.
+
 ### Future Improvements
 *Propose potential improvements for future projects.*
+
+Future assignments could benefit from using more advanced noise reduction techniques to reduce the remaining single-tone noise discrepencies. Enhancing voltage calibration methods could also further improve the accuracy of the rovers panoramic sweeps. Even exploring new filtering technologies may provide more precise solutions for maintaining signal integrity across various frequencies similar to what we used.
 
 ### Teamwork & Collaboration
 *Reflect on teamwork and collaboration during the project.*
