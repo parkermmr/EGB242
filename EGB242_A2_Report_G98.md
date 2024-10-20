@@ -667,7 +667,7 @@ When controlling the yaw angle, adjusted voltage settings effectively fixed any 
 
 Active Filter Selection: Among the four filters analyzed, Active Filter 2 emerged as the most effective for high-frequency noise reduction, crucial for the image transmission from the Mars rover.
 
-The successful noise reduction and voltage calibration processes are pivotal for ongoing Mars exploration, enabling better planning and execution of the rover's activities. Further refinement and additional filtering techniques can always improve the tranmissions and may address remaining noise issues.
+The successful noise reduction and voltage calibration processes are pivotal for ongoing Mars exploration, enabling better planning and execution of the rover's activities. Further refinement and additional filtering techniques can always improve the tranmissions and may address remaining noise issues. 
 
 ## Reflection
 
