@@ -488,13 +488,30 @@ This task's success is pivotal for the ongoing exploration and utilization of vi
 ### 3.1 Initial Image Analysis
 
 #### Objective
-Analyze the first received image for noise characteristics.
+The primary objective of this analysis is to assess the first received image of a potential landing site on Mars. This assessment aims to identify and characterize noise and other distortions that might affect the usability of the image for mission planning.
 
 #### Method
-Display and assess the image quality.
+The received image was displayed and examined to evaluate its quality. The main focus was on identifying noise patterns and any distortions that could compromise the image's clarity and usefulness for identifying suitable landing terrain.
 
 #### Results
-Discuss the quality and any noticeable noise patterns.
+The first received image shows significant visual noise, impacting the overall clarity:
+
+- **Visual Quality**: The image displays a considerable amount of graininess, with noise distributed across the entire image. This graininess could mask finer surface details that are crucial for assessing the landing site's safety.
+- **Noise Characteristics**: The noise pattern appears uniform, suggesting it might be due to electronic or transmission noise rather than environmental factors on Mars.
+- **Detail Obscuration**: The noise level is high enough that smaller features such as rocks or smaller geographical formations might not be distinguishable. This could complicate the assessment of potential hazards at the landing site.
+
+![First Received Image of Landing Site](Figures/FirstLandingSiteImage.png)
+*Figure 20: First Received Image of Landing Site*
+
+#### Analysis
+The quality of the image as received is suboptimal for detailed analysis due to the high level of noise. This could be attributed to several factors:
+
+- **Transmission Issues**: The noise pattern suggests issues with the communication channel, possibly a high level of electronic interference or a suboptimal transmission bitrate.
+- **Sensor Sensitivity**: The camera sensor's sensitivity to the Martian environment or the rover's electronic environment might need calibration to reduce the noise.
+- **Potential Remedies**: Applying digital filters or enhancing techniques might improve the image quality for better analysis. Further adjustments in the rover’s communication hardware or protocols might also be required to enhance future image transmissions.
+
+Given the current state of the image, it is recommended to conduct a more detailed analysis using advanced image processing techniques to filter out noise and enhance the image. This process should be repeated with subsequent images to ensure consistent improvements in image quality for mission-critical decisions.
+
 
 ### 3.2 Signal Analysis
 
