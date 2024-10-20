@@ -83,7 +83,7 @@ classdef SignalVisualizationApp < matlab.apps.AppBase
             end
             app.input_signal = app.input_signal(:)';
 
-            plotSignal(app, app.input_signal, 'Original Signal');
+            plotSignal(app, app.input_signal, 'Proccessed Signal');
         end
         
         function ApplyDenoisingButtonPushed(app, ~)

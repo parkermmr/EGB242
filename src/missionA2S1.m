@@ -10,10 +10,133 @@ end
 % Loaded the provided data
 load DataA2 audioMultiplexNoisy fs sid;
 
-% Defined the carrier frequencies
-carrier_frequencies = [72080, 56100, 40260, 24240, 8260];
+%% 1.1 Time Domain and Frequency Domain Analysis
+
+audioMultiplexNoisyColumn = audioMultiplexNoisy(:);
+
+t_vec = (0:length(audioMultiplexNoisyColumn) - 1) / fs;
+
+% Plotted Time Domain
+fig1 = figure;
+plot(t_vec, audioMultiplexNoisyColumn);
+xlabel('Time (seconds)');
+ylabel('Amplitude');
+title('Recorded Audio Waveform in Time Domain');
+grid on;
+saveas(fig1, '1.1-TimeDomainPlot.png');
+
+% Applied Hamming window to reduce spectral leakage
+windowed_audio_signal = audioMultiplexNoisyColumn .* hamming(length(audioMultiplexNoisyColumn));
+
+% Computed FFT of windowed signal
+fftaudioMultiplexNoisyColumn = fft(windowed_audio_signal);
+
+% Frequency vector adjusted for fftshift
+nA = length(windowed_audio_signal);
+fA = (-nA/2:nA/2-1)*(fs/nA);
+
+% Shiftted zero frequency component to center of spectrum
+fft_shifted_center = fftshift(fftaudioMultiplexNoisyColumn);
+
+% Plotted frequency domain
+fig2 = figure;
+plot(fA, abs(fft_shifted_center));
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+title('Frequency Domain Plot of Multiplexed Audio Signal');
+grid on;
+saveas(fig2, '1.1-FrequencyDomainPlot.png');
+
+%% 1.2 De-multiplexing System
+
+% Found peaks in the frequency spectrum to detect carrier frequencies
+systemA = abs(fft_shifted_center);
+minPeakProminenceA = max(systemA) * 0.1;
+minPeakDistanceA = 10000;
+positive_freqsA = fA(fA >= 0);
+system_positiveA = systemA(fA >= 0);
+[pkzA, loczA] = findpeaks(system_positiveA, 'MinPeakProminence', minPeakProminenceA, 'MinPeakDistance', minPeakDistanceA);
+detected_carrier_frequenciesA = positive_freqsA(loczA);
+
+fprintf('Detected Carrier Frequencies:\n');
+for i = 1:length(detected_carrier_frequenciesA)
+    fprintf('%.2f Hz\n', detected_carrier_frequenciesA(i));
+end
+
+% Plotted detected peaks on the magnitude spectrum
+fig3 = figure;
+plot(positive_freqsA, system_positiveA);
+hold on;
+plot(detected_carrier_frequenciesA, pkzA, 'ro');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+title('Detected Carrier Frequencies in the Positive Frequency Range');
+grid on;
+hold off;
+saveas(fig3, '1.2-DetectedFrequenciesPlot.png');
+
+% Demodulated signals using carrier frequencies
+demodulated_signalsA = cell(1, length(detected_carrier_frequenciesA));
+for i = 1:length(detected_carrier_frequenciesA)
+    fcA = detected_carrier_frequenciesA(i);
+    analytic_signalA = hilbert(audioMultiplexNoisyColumn);
+    t_vec = (0:length(audioMultiplexNoisyColumn) - 1)' / fs;
+    demodulated_complexA = analytic_signalA .* exp(-1j * 2 * pi * fcA * t_vec);
+    audio_bandwidthA = 8000;
+    cutoff_freqA = audio_bandwidthA / (fs / 2);
+    [bA, aA] = butter(6, cutoff_freqA);
+    demodulated_signalA = filter(bA, aA, real(demodulated_complexA));
+    demodulated_signalsA{i} = demodulated_signalA;
+
+    % Plotted time and frequency domain representations
+    figTimeDomain = figure;
+    subplot(2,1,1);
+    plot(t_vec, demodulated_signalA);
+    xlabel('Time (seconds)');
+    ylabel('Amplitude');
+    title(sprintf('Demodulated Audio Signal %d in Time Domain (Carrier: %.2f Hz)', i, fcA));
+    grid on;
+    fft_demodulated_signalA = fft(demodulated_signalA);
+    n_demodA = length(demodulated_signalA);
+    f_demodA = (-n_demodA/2:n_demodA/2-1)*(fs/n_demodA);
+    fft_demod_shiftedA = fftshift(fft_demodulated_signalA);
+    subplot(2,1,2);
+    plot(f_demodA, abs(fft_demod_shiftedA));
+    xlabel('Frequency (Hz)');
+    ylabel('Magnitude');
+    title(sprintf('Demodulated Audio Signal %d in Frequency Domain (Carrier: %.2f Hz)', i, fcA));
+    grid on;
+    saveas(figTimeDomain, fullfile(outputDir, sprintf('DemodulatedSignal_%dHz.png', fcA)));
+end
+
+
+%% PLAYBACK
+num_signalsA = length(demodulated_signalsA);
+fprintf('There are %d demodulated signals available.\n', num_signalsA);
+fprintf('To play a specific signal, enter a number between 1 and %d.\n', num_signalsA);
+fprintf('=================================================================\n\n');
+while true
+    signal_indexA = input(sprintf('Enter a number between 1 and %d to play a signal, or 0 to quit: ', num_signalsA));
+    if signal_indexA == 0
+        fprintf('Exiting.\n');
+        break;
+    elseif signal_indexA >= 1 && signal_indexA <= num_signalsA
+        fprintf('Playing demodulated audio for signal %d (Carrier Frequency: %.2f Hz)\n', signal_indexA, detected_carrier_frequenciesA(signal_indexA));
+        playback_signalA = demodulated_signalsA{signal_indexA};
+        playback_signalA = playback_signalA / max(abs(playback_signalA));
+        playerA = audioplayer(playback_signalA, fs);
+        play(playerA);
+        pause(length(playback_signalA) / fs + 0.5);
+        fprintf('Finished playing signal %d.\n\n', signal_indexA);
+        fprintf('=================================================================\n\n');
+    else
+        fprintf('Invalid input. Please enter a number between 1 and %d.\n', num_signalsA);
+    end
+end
 
 %% Characterized the Channel - 1.3
+
+carrier_frequencies = [72080, 56100, 40260, 24240, 8260];
 
 % 1-second duration for the sweep signal
 t_sweep = 0:1/fs:1-1/fs;
@@ -34,7 +157,7 @@ system_frequency_response = abs(fft_output_sweep(1:n_sweep/2)) ./ abs(fft_input_
 inverse_response = 1 ./ system_frequency_response;
 inverse_response(isinf(inverse_response) | isnan(inverse_response)) = 0;
 
-%% Designed an Inverse Filter - 1.4
+%% Designed an Inverse Filter - 1.4 & 1.5
 % Reasonable number of coefficients
 numCoeffs = 500;
 % Window to stabilize the filter
@@ -77,7 +200,6 @@ if isempty(noise_frequencies)
     noise_frequencies = []; 
 end
 
-%% Processed Each Carrier Frequency with Notch Filter - 1.5
 processed_signals = cell(1, length(carrier_frequencies));
 
 for i = 1:length(carrier_frequencies)
@@ -113,7 +235,7 @@ for i = 1:length(carrier_frequencies)
         demodulated_signal = filter(notchFilt, demodulated_signal);
     end
 
-    % Dynamic Range Compression (Optional)
+    % Dynamic Range Compression
     % Threshold above which to compress
     threshold = 0.8;
     % Compression ratio
@@ -123,7 +245,6 @@ for i = 1:length(carrier_frequencies)
     compressed_signal(exceeds_threshold) = threshold + ...
         (abs(demodulated_signal(exceeds_threshold)) - threshold) / ratio .* sign(demodulated_signal(exceeds_threshold));
 
-    %% Plotted and Save Results for each carrier frequency
     % Normalized and save the cleaned audio
     clean_signal_normalized = compressed_signal / max(abs(compressed_signal) + eps);
     processed_signals{i} = clean_signal_normalized;
