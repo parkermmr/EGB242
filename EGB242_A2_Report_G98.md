@@ -71,7 +71,8 @@ A frequency vector was created and centered at 0 Hz to aid in visualizing the fr
 ![Time Domain Plot For Multiplexed Signal](src/1.1-TimeDomainPlot.png)
 ***Figure 1:** Recorded Audio Waveform in the Time Domain. This plot represents the amplitude of the noisy multiplexed audio signal over a 20-second time span, visualizing the time-domain behavior of the signal.*
 ![Frequency Domain Plot For Multiplexed Signal](src/1.1-FrequencyDomainPlot.png)
-***Figure 2:**Frequency Domain Plot of the Multiplexed Audio Signal. This plot shows the magnitude of the signal's frequency components, providing insight into the spectral characteristics of the signal after applying a Hamming window and computing the FFT.*
+
+***Figure 2:*** *Frequency Domain Plot of the Multiplexed Audio Signal. This plot shows the magnitude of the signal's frequency components, providing insight into the spectral characteristics of the signal after applying a Hamming window and computing the FFT.*
 
 #### Analysis
 As shown in **Figure 1**, the time-domain plot reveals a noisy signal with a broad range of amplitudes, indicating a composite of several frequencies and possibly some interference. The lack of periodicity suggests complex or multiplexed signal sources. **Figure 2** demonstrates how the application of a Hamming window helped in minimizing spectral leakage, allowing for a clearer view of the frequency components. Significant peaks in the frequency-domain plot indicate dominant frequencies within the audio signal, which are crucial for further analysis and filtering or demodulation. This detailed visualization of both time and frequency domains is essential for understanding the content and quality of the multiplexed signal and for any subsequent efforts to isolate or modify specific components of the audio.
@@ -116,19 +117,19 @@ The combination of these techniques ensures that each demodulated signal is clea
 ![Carrier Frequencies](src/1.2-DetectedFrequenciesPlot.png)
 ***Figure 3:** Detected Carrier Frequencies in the Positive Frequency Range. Carrier frequencies are marked on the magnitude spectrum, indicating the presence of five distinct carrier signals.*
 
-![Demodulated Audio Signal 1 in Time and Frequency Domain](src/Output/Data1/DemodulatedSignal_8260Hz.png)
+![Demodulated Audio Signal 1 in Time and Frequency Domain](Figures/DemodulatedSignal_8260Hz.png)
 ***Figure 4:** Demodulated Audio Signal 1 (Carrier: 8260 Hz). Time domain (top) shows the amplitude of the audio over time, while the frequency domain (bottom) displays the magnitude spectrum post-demodulation.*
 
-![Demodulated Audio Signal 2 in Time and Frequency Domain](src/Output/Data1/DemodulatedSignal_24240Hz.png)
+![Demodulated Audio Signal 2 in Time and Frequency Domain](Figures/DemodulatedSignal_24240Hz.png)
 ***Figure 5:** Demodulated Audio Signal 2 (Carrier: 24240 Hz). The time domain graph indicates a relatively stable amplitude, and the frequency domain highlights dominant frequency components.*
 
-![Demodulated Audio Signal 3 in Time and Frequency Domain](src/Output/Data1/DemodulatedSignal_40260Hz.png)
+![Demodulated Audio Signal 3 in Time and Frequency Domain](Figures/DemodulatedSignal_40260Hz.png)
 ***Figure 6:** Demodulated Audio Signal 3 (Carrier: 40260 Hz). Displays the time-domain waveform and its corresponding frequency spectrum, emphasizing the audio signal's detailed characteristics after demodulation.*
 
-![Demodulated Audio Signal 4 in Time and Frequency Domain](src/Output/Data1/DemodulatedSignal_56100Hz.png)
+![Demodulated Audio Signal 4 in Time and Frequency Domain](Figures/DemodulatedSignal_56100Hz.png)
 ***Figure 7:** Demodulated Audio Signal 4 (Carrier: 56100 Hz). Shows amplitude fluctuations over time and a clear spectral view illustrating the effects of demodulation on the audio signal.*
 
-![Demodulated Audio Signal 5 in Time and Frequency Domain](src/Output/Data1/DemodulatedSignal_72080Hz.png)
+![Demodulated Audio Signal 5 in Time and Frequency Domain](Figures/DemodulatedSignal_72080Hz.png)
 ***Figure 8:** Demodulated Audio Signal 5 (Carrier: 72080 Hz). Both the time and frequency domain plots reveal the audio signal's characteristics, with evident frequency peaks corresponding to the audio content.*
 
 #### Analysis
