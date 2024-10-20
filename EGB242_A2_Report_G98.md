@@ -39,6 +39,7 @@
          - [Channel Analysis App](#channel-analysis-app)
          - [Signal Visualization App](#signal-visualization-app)
          - [Audio Playback App](#audio-playback-app)
+      - [Section 2: Main Source Code](#section-2)
    - [Appendix B: Additional Material](#appendix-b-additional-material)
 
 ---
@@ -137,7 +138,7 @@ The combination of these techniques ensures that each demodulated signal is clea
 ***Figure 8:** Demodulated Audio Signal 5 (Carrier: 72080 Hz). Both the time and frequency domain plots reveal the audio signal's characteristics, with evident frequency peaks corresponding to the audio content.*
 
 #### Analysis
-- **Audio Quality**: Listening tests for each demodulated signal (as referenced in Figures 4 to 8) indicate a significant improvement in audio clarity, with a reduction in background noise musical tones.
+- **Audio Quality**: Listening tests for each demodulated signal (as referenced in Figures 4 to 8) indicate a significant improvement in audio clarity, with a reduction in background noise impeding the original musical tones.
 - **Residual Noises**: Some residual noises that match the noise spectrum modelled in **Figure 1** of Section 1.1 are still present. These are likely artifacts from the original noising process and the carrier modulation. In particular the single tone noise.
 - **Time and Frequency Domain Insights**:
   - The time domain plots (top graphs in Figures 4 to 8) show the waveform's amplitude variations over time, which are smooth and consistent, suggesting effective demodulation.
@@ -189,6 +190,11 @@ The analysis involved transmitting a chirp signal through the channel and measur
 - **Time Resolution**: The finite length of the chirp limits the time resolution available for analyzing the channel's response, potentially smoothing over rapid changes in channel behaviour.
 - **Frequency Resolution**: The chirp covers a wide frequency range but at the cost of precision in identifying the exact frequency at which certain phenomena occur, especially for very sharp resonances or notches.
 - **Assumptions of Linearity**: The analysis assumes the channel behaves linearly, which the time-domain output signal suggests may not be entirely accurate. Nonlinear behaviours require different analytical approaches or signal processing techniques to characterize fully.
+
+#### Additional Remarks
+When choosing the test signal to transmit through the system, multitudes of different signal types were considered. Ultimately, for the purposes of this task, a **chirp sweep** signal was chosen. When investigating signal types commonly used for measuring impulse response, a paper on swept sine chirps presented itself. The core strength of these signals was stated "This technique is best suited to making measurements where very high SNR is needed, like acoustic measurements in noisy environments" (Chan I., 2010). Based on the prior observations, such as the assumption of the origin of the signal being acoustic this decision was further enforced. However, as aforementioned, the potential of the chirp signal can be limited in terms of precision. Additionally, the model applied asumed linearity in the system. Out of curiosity, and in the spirit of improvement an application was developed within MATLAB to specifically to model the frequency response of the this specific system with differing input signals. This application encompasses 9 input signals: Impulse, Narrow Pulse, White Noise, Chirp Signal, Sum of Sinusoids, Square Wave, PBRS, Exponential Sweep, and a custom signal slot. Given more time it would be interesting to see how differing input signals react with the channel which was the purpose of the application. The application did reaffirm the choice of the chirp signal and was used to model **Figure 9**. Overall, it provided a reaffirming introspective and a window into the effects of the modulation process within a limited scope.
+
+Application Source Code (Included in Submission Files): [Source Code](#channel-analysis-app)
 
 ### 1.4 & 1.5 Noise Reduction Application
 
@@ -264,7 +270,7 @@ The following are the time-domain and frequency-domain visualizations of the pro
 
 #### Conclusion
 
-The noise reduction process, which involved inverse filtering and the removal of single-tone noise, has been effective in enhancing the quality of the multiplexed audio signals. The processed signals now exhibit smooth waveforms in the time domain and clean spectra in the frequency domain, indicating successful suppression of unwanted noise components, however in some recordings still persistence of the single-tone noise is evident. Thus other filtering techniques may be required.
+The noise reduction process, which involved inverse filtering and the removal of single-tone noise, has been effective in enhancing the quality of the multiplexed audio signals. The processed signals now exhibit smooth waveforms in the time domain and clean spectra in the frequency domain, indicating successful suppression of unwanted noise components, however in some recordings, persistence of the single-tone noise is still evident. Thus other filtering techniques may be required.
 
 ---
 
@@ -505,7 +511,7 @@ The first received image shows significant visual noise, impacting the overall c
 - **Detail Obscuration**: The noise level is high enough that smaller features such as rocks or smaller geographical formations might not be distinguishable. This could complicate the assessment of potential hazards at the landing site.
 
 ![First Received Image of Landing Site](Figures/FirstLandingSiteImage.png)
-*Figure 20: First Received Image of Landing Site*
+***Figure 20:** First Received Image of Landing Site*
 
 #### Analysis
 The quality of the image as received is suboptimal for detailed analysis due to the high level of noise. This could be attributed to several factors:
