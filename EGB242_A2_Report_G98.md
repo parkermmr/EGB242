@@ -35,6 +35,10 @@
 6. [References](#references)
 7. [Appendices](#appendices)
    - [Appendix A: MATLAB Source Code](#appendix-a-matlab-source-code)
+      - [Section 1: Main Source Code](#section-1)
+         - [Channel Analysis App](#channel-analysis-app)
+         - [Signal Visualization App](#signal-visualization-app)
+         - [Audio Playback App](#audio-playback-app)
    - [Appendix B: Additional Material](#appendix-b-additional-material)
 
 ---
@@ -530,14 +534,14 @@ Upon examining the plots:
   - The plot shows a relatively stable signal with minor fluctuations in pixel intensity, indicating a stable transmission with low-level noise.
   - A sharp spike is observed towards the end, which could indicate a transmission error or an anomaly in data capture or processing.
   - ![Time Domain Representation of Received Image Data](Figures/3.2_Time_Domain_Images_Recieved.png)
-  *Figure 21: Time Domain Representation of Received Image Data*
+  ***Figure 21:** Time Domain Representation of Received Image Data*
 
 - **Frequency Domain Representation**:
   - The majority of the signal's energy is concentrated at very low frequencies, which is typical for image data where major variations are gradual changes in intensity across the image.
   - The presence of a significant peak at zero frequency suggests a DC component, which is common in image data representing the overall brightness of the image.
   - Noise appears to be spread across the higher frequencies but is not dominant, indicating that the transmission channel is relatively clean with only minor noise interference.
   - ![Frequency Domain Representation of Received Image Data](Figures/3.2_Frequency_Domain_Images_Recieved.png)
-  *Figure 22: Frequency Domain Representation of Received Image Data*
+  ***Figure 22:** Frequency Domain Representation of Received Image Data*
 
 #### Analysis
 - **Nature of the Noise**: The noise in the signal appears to be low-frequency and high-frequency white noise, which is commonly associated with electronic transmission systems. The high-frequency noise components are less intense, suggesting that they do not significantly impact the overall quality of the image.
@@ -551,13 +555,79 @@ Overall, the analysis confirms that while there is some noise present in the sig
 ### 3.3 Filter Selection
 
 #### Objective
-Choose the appropriate filter for noise removal.
+The objective of this section is to determine the most appropriate filter for removing noise from the communication channel of the Mars rover’s camera signal. Several filter designs are provided, including both passive and active filters, and they need to be analyzed based on their transfer functions, Bode plots, and suitability for the task.
 
 #### Method
-Analyze different filters based on provided schematics.
+The analysis was conducted using the transfer functions of the four filters:
+
+1. **Passive Filter 1**: A combination of RC high-pass and low-pass filters.
+2. **Passive Filter 2**: A two-stage RC low-pass filter.
+3. **Active Filter 1**: A second-order band-pass filter.
+4. **Active Filter 2**: A second-order low-pass filter.
+
+The general form of the transfer functions for the filters were derived based on their circuit configurations and component values:
+
+- **Passive Filter 1:**
+  \[
+  \frac{V_{out}}{V_{in}} = \frac{1}{(R_1 C_1)(R_2 C_2) s^2 + (R_1 C_1 + R_2 C_2) s + 1}
+  \]
+- **Passive Filter 2:**
+  \[
+  \frac{V_{out}}{V_{in}} = \frac{s}{(R_1 C_1)(R_2 C_2) s^2 + (R_1 C_1 + R_2 C_2) s + 1}
+  \]
+- **Active Filter 1:**
+  \[
+  \frac{V_{out}}{V_{in}} = \frac{s^2}{s^2 + \frac{2s}{RC} + \frac{1}{(RC)^2}}
+  \]
+- **Active Filter 2:**
+  \[
+  \frac{V_{out}}{V_{in}} = \frac{1/(RC)^2}{s^2 + \frac{2s}{RC} + \frac{1}{(RC)^2}}
+  \]
+
+We used the following component values in the analysis:
+- **R1 = 1.2 kΩ**, **C1 = 10 μF**, **R2 = 1 kΩ**, **C2 = 4.7 μF**, **R = 820 Ω**, and **C = 1 μF**.
+
+These values were substituted into the transfer function formulas to generate the filter coefficients for each circuit, and the frequency response of each filter was analyzed by generating Bode plots.
 
 #### Results
-Justify the selection of a specific filter type.
+
+1. **Passive Filter 1**
+   - **Bode Plot**:  
+   ![Passive Filter 1 Response](Figures/3.3_Passive_Filter_One_Response.png)
+
+   ***Figure 23:** Passive Filter 1 shows a significant drop-off in gain at high frequencies, typical of an RC filter. The cutoff frequency is fairly high, meaning that while some high-frequency noise would be filtered, low-frequency noise would likely still pass through. This may limit its effectiveness in removing the broad range of noise identified in the signal.*
+
+2. **Passive Filter 2**
+   - **Bode Plot**:  
+   ![Passive Filter 2 Response](Figures/3.3_Passive_Filter_Two_Response.png)
+
+   ***Figure 24:** Passive Filter 2, being a two-stage low-pass filter, shows more attenuation at higher frequencies compared to Passive Filter 1. Its cutoff frequency is lower, which helps filter out a wider range of high-frequency noise. However, it may not fully address noise in the mid-frequency range.*
+
+3. **Active Filter 1**
+   - **Bode Plot**:  
+   ![Active Filter 1 Response](Figures/3.3_Active_Filter_One_Response.png)
+
+   ***Figure 25:** Active Filter 1 functions as a band-pass filter. The Bode plot shows it has a relatively narrow passband, which could isolate the desired signal from mid-range noise. However, it may allow low-frequency noise through and could also fail to suppress some high-frequency noise components.*
+
+4. **Active Filter 2**
+   - **Bode Plot**:  
+   ![Active Filter 2 Response](Figures/3.3_Active_Filter_Two_Response.png)
+
+   ***Figure 26:** Active Filter 2 is a low-pass filter with a lower cutoff frequency than the other filters, making it ideal for attenuating a broad range of high-frequency noise. It provides a steep roll-off in gain at high frequencies and shows strong suppression of higher-frequency noise while preserving the lower-frequency signal components.*
+
+#### Analysis
+
+Based on the Bode plot analysis and the noise characteristics of the received signal, **Active Filter 2** appears to be the most suitable choice. The following factors contribute to this decision:
+
+1. **Attenuation of High-Frequency Noise**: Active Filter 2 provides the strongest attenuation of high-frequency noise, which was identified as the primary source of interference in the received signal.
+2. **Cutoff Frequency**: The low cutoff frequency of Active Filter 2 ensures that a significant amount of the high-frequency noise is eliminated while maintaining the integrity of the lower-frequency image signal.
+3. **Steeper Roll-Off**: Compared to the passive filters, Active Filter 2 has a much steeper roll-off, meaning that unwanted high-frequency noise is removed more effectively.
+4. **Broad Applicability**: Unlike Active Filter 1, which has a narrow passband and would only be effective in certain frequency ranges, Active Filter 2 is suitable for filtering noise across a wider range of frequencies.
+
+While Passive Filter 2 provides better attenuation than Passive Filter 1, neither offers the degree of noise suppression necessary for the communication system. **Active Filter 2** combines the advantages of a low cutoff frequency and steep roll-off, making it the best choice for this application.
+
+#### Conclusion
+After analyzing all four filters, **Active Filter 2** was selected as the most appropriate filter for removing noise from the communication channel. It provides effective high-frequency noise attenuation while preserving the integrity of the signal in the lower-frequency range, which is essential for ensuring clear image transmission from the Mars rover.
 
 ### 3.4 Noise Removal and Image Cleanup
 
@@ -618,7 +688,1646 @@ WaveMetrics. (n.d.). Hilbert Transform. Available at: https://www.wavemetrics.co
 
 ### Appendix A: MATLAB Source Code
 
-*Include raw source code relevant to the tasks completed.*
+#### Section 1
+```matlab
+%% EGB242 Assignment 2, Section 1 %%
+
+clear all; close all; clc;
+
+outputDir = 'Output/Data1';
+if ~exist(outputDir, 'dir')
+    mkdir(outputDir);
+end
+
+% Loaded the provided data
+load DataA2 audioMultiplexNoisy fs sid;
+
+%% 1.1 Time Domain and Frequency Domain Analysis
+
+audioMultiplexNoisyColumn = audioMultiplexNoisy(:);
+
+t_vec = (0:length(audioMultiplexNoisyColumn) - 1) / fs;
+
+% Plotted Time Domain
+fig1 = figure;
+plot(t_vec, audioMultiplexNoisyColumn);
+xlabel('Time (seconds)');
+ylabel('Amplitude');
+title('Recorded Audio Waveform in Time Domain');
+grid on;
+saveas(fig1, '1.1-TimeDomainPlot.png');
+
+% Applied Hamming window to reduce spectral leakage
+windowed_audio_signal = audioMultiplexNoisyColumn .* hamming(length(audioMultiplexNoisyColumn));
+
+% Computed FFT of windowed signal
+fftaudioMultiplexNoisyColumn = fft(windowed_audio_signal);
+
+% Frequency vector adjusted for fftshift
+nA = length(windowed_audio_signal);
+fA = (-nA/2:nA/2-1)*(fs/nA);
+
+% Shiftted zero frequency component to center of spectrum
+fft_shifted_center = fftshift(fftaudioMultiplexNoisyColumn);
+
+% Plotted frequency domain
+fig2 = figure;
+plot(fA, abs(fft_shifted_center));
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+title('Frequency Domain Plot of Multiplexed Audio Signal');
+grid on;
+saveas(fig2, '1.1-FrequencyDomainPlot.png');
+
+%% 1.2 De-multiplexing System
+
+% Found peaks in the frequency spectrum to detect carrier frequencies
+systemA = abs(fft_shifted_center);
+minPeakProminenceA = max(systemA) * 0.1;
+minPeakDistanceA = 10000;
+positive_freqsA = fA(fA >= 0);
+system_positiveA = systemA(fA >= 0);
+[pkzA, loczA] = findpeaks(system_positiveA, 'MinPeakProminence', minPeakProminenceA, 'MinPeakDistance', minPeakDistanceA);
+detected_carrier_frequenciesA = positive_freqsA(loczA);
+
+fprintf('Detected Carrier Frequencies:\n');
+for i = 1:length(detected_carrier_frequenciesA)
+    fprintf('%.2f Hz\n', detected_carrier_frequenciesA(i));
+end
+
+% Plotted detected peaks on the magnitude spectrum
+fig3 = figure;
+plot(positive_freqsA, system_positiveA);
+hold on;
+plot(detected_carrier_frequenciesA, pkzA, 'ro');
+xlabel('Frequency (Hz)');
+ylabel('Magnitude');
+title('Detected Carrier Frequencies in the Positive Frequency Range');
+grid on;
+hold off;
+saveas(fig3, '1.2-DetectedFrequenciesPlot.png');
+
+% Demodulated signals using carrier frequencies
+demodulated_signalsA = cell(1, length(detected_carrier_frequenciesA));
+for i = 1:length(detected_carrier_frequenciesA)
+    fcA = detected_carrier_frequenciesA(i);
+    analytic_signalA = hilbert(audioMultiplexNoisyColumn);
+    t_vec = (0:length(audioMultiplexNoisyColumn) - 1)' / fs;
+    demodulated_complexA = analytic_signalA .* exp(-1j * 2 * pi * fcA * t_vec);
+    audio_bandwidthA = 8000;
+    cutoff_freqA = audio_bandwidthA / (fs / 2);
+    [bA, aA] = butter(6, cutoff_freqA);
+    demodulated_signalA = filter(bA, aA, real(demodulated_complexA));
+    demodulated_signalsA{i} = demodulated_signalA;
+
+    % Plotted time and frequency domain representations
+    figTimeDomain = figure;
+    subplot(2,1,1);
+    plot(t_vec, demodulated_signalA);
+    xlabel('Time (seconds)');
+    ylabel('Amplitude');
+    title(sprintf('Demodulated Audio Signal %d in Time Domain (Carrier: %.2f Hz)', i, fcA));
+    grid on;
+    fft_demodulated_signalA = fft(demodulated_signalA);
+    n_demodA = length(demodulated_signalA);
+    f_demodA = (-n_demodA/2:n_demodA/2-1)*(fs/n_demodA);
+    fft_demod_shiftedA = fftshift(fft_demodulated_signalA);
+    subplot(2,1,2);
+    plot(f_demodA, abs(fft_demod_shiftedA));
+    xlabel('Frequency (Hz)');
+    ylabel('Magnitude');
+    title(sprintf('Demodulated Audio Signal %d in Frequency Domain (Carrier: %.2f Hz)', i, fcA));
+    grid on;
+    saveas(figTimeDomain, fullfile(outputDir, sprintf('DemodulatedSignal_%dHz.png', fcA)));
+end
+
+
+%% PLAYBACK
+num_signalsA = length(demodulated_signalsA);
+fprintf('There are %d demodulated signals available.\n', num_signalsA);
+fprintf('To play a specific signal, enter a number between 1 and %d.\n', num_signalsA);
+fprintf('=================================================================\n\n');
+while true
+    signal_indexA = input(sprintf('Enter a number between 1 and %d to play a signal, or 0 to quit: ', num_signalsA));
+    if signal_indexA == 0
+        fprintf('Exiting.\n');
+        break;
+    elseif signal_indexA >= 1 && signal_indexA <= num_signalsA
+        fprintf('Playing demodulated audio for signal %d (Carrier Frequency: %.2f Hz)\n', signal_indexA, detected_carrier_frequenciesA(signal_indexA));
+        playback_signalA = demodulated_signalsA{signal_indexA};
+        playback_signalA = playback_signalA / max(abs(playback_signalA));
+        playerA = audioplayer(playback_signalA, fs);
+        play(playerA);
+        pause(length(playback_signalA) / fs + 0.5);
+        fprintf('Finished playing signal %d.\n\n', signal_indexA);
+        fprintf('=================================================================\n\n');
+    else
+        fprintf('Invalid input. Please enter a number between 1 and %d.\n', num_signalsA);
+    end
+end
+
+%% Characterized the Channel - 1.3
+
+carrier_frequencies = [72080, 56100, 40260, 24240, 8260];
+
+% 1-second duration for the sweep signal
+t_sweep = 0:1/fs:1-1/fs;
+% Sweep from 0 Hz to half the sampling rate
+sweep = chirp(t_sweep, 0, 1, fs/2);  
+output_sweep = channel(sid, sweep, fs);
+
+% Computed the FFT of input and output sweeps
+n_sweep = length(sweep);
+fft_input_sweep = fft(sweep);
+fft_output_sweep = fft(output_sweep);
+
+% Frequency axis for one-sided FFT
+frequency_axis_sweep = (0:n_sweep/2-1)*(fs/n_sweep); 
+
+% Calculated the system frequency response
+system_frequency_response = abs(fft_output_sweep(1:n_sweep/2)) ./ abs(fft_input_sweep(1:n_sweep/2));
+inverse_response = 1 ./ system_frequency_response;
+inverse_response(isinf(inverse_response) | isnan(inverse_response)) = 0;
+
+%% Designed an Inverse Filter - 1.4 & 1.5
+% Reasonable number of coefficients
+numCoeffs = 500;
+% Window to stabilize the filter
+window = hamming(numCoeffs);  
+
+inverse_response = inverse_response(:).';
+
+% Created full symmetric frequency response for inverse FFT
+full_inverse_response = [inverse_response, inverse_response(end-1:-1:2)];
+
+% Computed the inverse FFT to obtain the impulse response of the inverse filter
+inverse_filter_coeffs = ifft(full_inverse_response, 'symmetric');
+
+% Took the first numCoeffs coefficients and apply the window
+inverse_filter_coeffs = inverse_filter_coeffs(1:numCoeffs) .* window';
+
+% Applied the inverse filter to the noisy multiplexed audio signal
+denoised_signal = filter(inverse_filter_coeffs, 1, audioMultiplexNoisy);
+
+% Analyzed the denoised signal to detect high-pitched noise frequencies
+n_denoised = length(denoised_signal);
+fft_denoised_signal = fft(denoised_signal);
+magnitude_spectrum = abs(fft_denoised_signal(1:n_denoised/2));
+
+% Frequency axis for denoised_signal
+frequency_axis_denoised = (0:n_denoised/2-1)*(fs/n_denoised);
+
+% Peak detection
+[pks, locs] = findpeaks(magnitude_spectrum, ...
+    'MinPeakProminence', max(magnitude_spectrum)/20, ...
+    'MinPeakDistance', fs/1000);
+noise_frequencies = frequency_axis_denoised(locs);
+
+% Displayed detected noise frequencies
+disp('Detected Noise Frequencies:');
+disp(noise_frequencies);
+
+% Initialized noise_frequencies if no peaks were detected
+if isempty(noise_frequencies)
+    noise_frequencies = []; 
+end
+
+processed_signals = cell(1, length(carrier_frequencies));
+
+for i = 1:length(carrier_frequencies)
+    fc = carrier_frequencies(i);
+
+    % Designed a bandpass filter for each carrier frequency
+    bpFilt = designfilt('bandpassfir', 'FilterOrder', 100, ...
+                        'CutoffFrequency1', fc-1520, 'CutoffFrequency2', fc+1520, ...
+                        'SampleRate', fs);
+
+    % Applied the bandpass filter
+    filtered_signal = filter(bpFilt, denoised_signal);
+    filtered_signal = filtered_signal(:); 
+
+    % Defined time vector as a column vector
+    t = ((0:length(filtered_signal)-1)/fs)'; 
+
+    % Demodulated the signal using Hilbert transform (envelope detection)
+    analytic_signal = hilbert(filtered_signal);
+    envelope = abs(analytic_signal);
+
+    % Applied a low-pass filter to the envelope
+    lpFilt = designfilt('lowpassfir', 'FilterOrder', 120, ...
+                        'CutoffFrequency', 3000, ...
+                        'SampleRate', fs);
+    demodulated_signal = filter(lpFilt, envelope);
+
+    % Applied notch filters to remove detected high-pitched noise
+    for nf = noise_frequencies
+        notchFilt = designfilt('bandstopiir', 'FilterOrder', 2, ...
+                               'HalfPowerFrequency1', nf-50, 'HalfPowerFrequency2', nf+50, ...
+                               'SampleRate', fs);
+        demodulated_signal = filter(notchFilt, demodulated_signal);
+    end
+
+    % Dynamic Range Compression
+    % Threshold above which to compress
+    threshold = 0.8;
+    % Compression ratio
+    ratio = 4;        
+    compressed_signal = demodulated_signal;
+    exceeds_threshold = abs(demodulated_signal) > threshold;
+    compressed_signal(exceeds_threshold) = threshold + ...
+        (abs(demodulated_signal(exceeds_threshold)) - threshold) / ratio .* sign(demodulated_signal(exceeds_threshold));
+
+    % Normalized and save the cleaned audio
+    clean_signal_normalized = compressed_signal / max(abs(compressed_signal) + eps);
+    processed_signals{i} = clean_signal_normalized;
+    audiowrite(fullfile(outputDir, sprintf('ProcessedSignal_%dHz.wav', fc)), clean_signal_normalized, fs);
+
+    % Plotted time-domain signal
+    figure;
+    plot((0:length(clean_signal_normalized)-1)/fs, clean_signal_normalized);
+    title(sprintf('Compressed Cleaned Audio Signal at %d Hz', fc));
+    xlabel('Time (s)');
+    ylabel('Amplitude');
+    saveas(gcf, fullfile(outputDir, sprintf('ProcessedSignal_%dHz_TimeDomain.png', fc)));
+
+    % Plotted frequency-domain signal
+    n_sig = length(clean_signal_normalized);
+    Y_sig = fft(clean_signal_normalized);
+    f_sig = (0:n_sig/2-1)*(fs/n_sig);
+    magnitude_spectrum_sig = abs(Y_sig(1:n_sig/2));
+    figure;
+    plot(f_sig, magnitude_spectrum_sig);
+    xlabel('Frequency (Hz)');
+    ylabel('Magnitude');
+    title(sprintf('Processed Signal at %d Hz - Frequency Domain', fc));
+    saveas(gcf, fullfile(outputDir, sprintf('ProcessedSignal_%dHz_FrequencyDomain.png', fc)));
+end
+
+%% PLAYBACK AND ANALYSIS APPLICATIONS 
+
+% There are three applications built ground up for this analysis task:
+% SignalVisualizationApp, ChannelAnalysisApp, and AudioPlaybackApp
+% The Visualisation and Playback apps are Output dependant meaning you need
+% to save the script output to be able to use these applications. Run this
+% section of code to be prompted option to save the outputs. Also get the
+% option to launch an application. 
+%
+% For more information on these applications please refer to there header
+% portion of their independant src files.
+%
+% Hope you enjoy!
+
+clc;
+fprintf('\n');
+
+disp('             $$\  $$\           $$$$$$\                                                 $$$$$$\   $$$$$$\           $$\  $$\                                  ');
+disp('             \$$\ \$$\         $$  __$$\                                               $$  __$$\ $$  __$$\         $$  |$$  |                                 ');
+disp('              \$$\ \$$\        $$ /  \__| $$$$$$\   $$$$$$\  $$\   $$\  $$$$$$\        $$ /  $$ |$$ /  $$ |       $$  /$$  /                                  ');
+disp('               \$$\ \$$\       $$ |$$$$\ $$  __$$\ $$  __$$\ $$ |  $$ |$$  __$$\       \$$$$$$$ | $$$$$$  |      $$  /$$  /                                   ');
+disp('                $$ | $$ |      $$ |\_$$ |$$ |  \__|$$ /  $$ |$$ |  $$ |$$ /  $$ |       \____$$ |$$  __$$        \$$< \$$<                                   ');
+disp('               $$ / $$ /       $$ |  $$ |$$ |      $$ |  $$ |$$ |  $$ |$$ |  $$ |      $$\   $$ |$$ /  $$ |       \$$\ \$$\                                  ');
+disp('              $$ / $$ /        \$$$$$$  |$$ |      \$$$$$$  |\$$$$$$  |$$$$$$$  |      \$$$$$$  |\$$$$$$  |        \$$\ \$$\                                 ');
+disp('             \__/ \__/          \______/ \__|       \______/  \______/ $$  ____/        \______/  \______/          \__| \__|                                 ');
+disp('                                                                       $$ |                                                                                  ');
+disp('                                                                       $$ |                                                                                  ');
+disp('                                                                       \__|                                                                                  ');
+disp('                                                                                                                                                 ');
+disp('                                                                                                                                                 ');
+disp('                                                                                                                                                 ');
+disp('$$$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\ $$$$$$\  ');
+disp('\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______|\______| ');
+disp('                                                                                                                                                 ');
+disp('                                                                                                                                                 ');
+disp('                                                                                                                                                 ');
+disp('                                                                                                                                                 ');
+disp('                                                                                                                                                 ');
+disp('                           $$$$$$$\  $$$$$$$\  $$$$$$$$\  $$$$$$\  $$$$$$$$\ $$\   $$\ $$$$$$$$\  $$$$$$\                                             ');
+disp('                           $$  __$$\ $$  __$$\ $$  _____|$$  __$$\ $$  _____|$$$\  $$ |\__$$  __|$$  __$$\                                            ');
+disp('                           $$ |  $$ |$$ |  $$ |$$ |      $$ /  \__|$$ |      $$$$\ $$ |   $$ |   $$ /  \__|                                           ');
+disp('                           $$$$$$$  |$$$$$$$  |$$$$$\    \$$$$$$\  $$$$$\    $$ $$\$$ |   $$ |   \$$$$$$\                                             ');
+disp('                           $$  ____/ $$  __$$< $$  __|    \____$$\ $$  __|   $$ \$$$$ |   $$ |    \____$$\                                            ');
+disp('                           $$ |      $$ |  $$ |$$ |      $$\   $$ |$$ |      $$ |\$$$ |   $$ |   $$\   $$ |                                           ');
+disp('                           $$ |      $$ |  $$ |$$$$$$$$\ \$$$$$$  |$$$$$$$$\ $$ | \$$ |   $$ |   \$$$$$$  |                                           ');
+disp('                           \__|      \__|  \__|\________| \______/ \________|\__|  \__|   \__|    \______/                                            ');
+disp('                                                                                                                                                 ');
+disp('                                                                                                                                                 ');
+disp('                              $$$$$$$\   $$$$$$\  $$$$$$$\ $$$$$$$$\        $$$$$$\  $$\   $$\ $$$$$$$$\                                          ');
+disp('                              $$  __$$\ $$  __$$\ $$  __$$\\__$$  __|      $$  __$$\ $$$\  $$ |$$  _____|                                         ');
+disp('                              $$ |  $$ |$$ /  $$ |$$ |  $$ |  $$ |         $$ /  $$ |$$$$\ $$ |$$ |                                               ');
+disp('                $$$$$$\       $$$$$$$  |$$$$$$$$ |$$$$$$$  |  $$ |         $$ |  $$ |$$ $$\$$ |$$$$$\          $$$$$$\                            ');
+disp('                \______|      $$  ____/ $$  __$$ |$$  __$$<   $$ |         $$ |  $$ |$$ \$$$$ |$$  __|         \______|                           ');
+disp('                              $$ |      $$ |  $$ |$$ |  $$ |  $$ |         $$ |  $$ |$$ |\$$$ |$$ |                                               ');
+disp('                              $$ |      $$ |  $$ |$$ |  $$ |  $$ |          $$$$$$  |$$ | \$$ |$$$$$$$$\                                          ');
+disp('                              \__|      \__|  \__|\__|  \__|  \__|          \______/ \__|  \__|\________|                                         ');
+disp('                                                                                                                                                 ');
+disp('                                                                                                                                                 ');
+
+userInput = input('Do you want to save the data? Y/N [Y]: ', 's');
+if isempty(userInput)
+    userInput = 'Y';
+end
+
+if upper(userInput) == 'Y'
+    fprintf('Saving Data ...\n');
+
+    outputDir = 'Output/Data1';
+    if ~exist(outputDir, 'dir')
+        mkdir(outputDir);
+    end
+
+    save(fullfile(outputDir, 'processed_data.mat'), 'processed_signals', 'fs', 'carrier_frequencies', 'frequency_axis_denoised', 'system_frequency_response', 'inverse_filter_coeffs');
+    
+    fprintf('Data saved successfully!\n');
+end
+
+fprintf('\n');
+disp('Select an application to launch:');
+disp('1: Signal Visualization App');
+disp('2: Channel Analysis App');
+disp('3: Audio Playback App');
+disp('4: Exit');
+
+choice = input('Enter your choice (1-4): ');
+
+switch choice
+    case 1
+        SignalVisualizationApp;
+    case 2
+        ChannelAnalysisApp;
+    case 3
+        AudioPlaybackApp;
+    case 4
+        disp('Exiting...');
+    otherwise
+        disp('Invalid choice. Please restart the script and try again.');
+end
+```
+##### Channel Analysis App
+```matlab
+% Channel Analysis App
+% Description:
+% The Channel Analysis App allows users to generate various types of test signals,
+% transmit them through a modeled communication channel, and analyze the results.
+% The app supports time-domain and frequency-domain signal visualization, with
+% options for customizing signal properties, including duration, signal type,
+% and integer parameters such as the number of sinusoids or PRBS order.
+% Users can visualize the time-domain input and output signals, as well as the
+% frequency response of the channel.
+
+% Features:
+% - **Signal Generation:** Generate signals such as impulse signals, PRBS, sum of sinusoids, and more.
+% - **Customizable Signal Parameters:** Adjust signal duration (in milliseconds) and integer parameters 
+%   (e.g., number of sinusoids, PRBS order) depending on the selected signal type.
+% - **Channel Analysis:** Transmit signals through a predefined channel model and analyze the output.
+% - **Time-Domain Visualization:** View the original and channel-affected signals in the time domain.
+% - **Frequency-Domain Visualization:** View the estimated frequency response |H(f)| of the channel.
+% - **Result Display:** Detailed results including magnitude and phase response at specific frequencies.
+
+% How to Use:
+% 1. **Select Signal Type:** Choose a signal type from the drop-down menu (e.g., Impulse, PRBS).
+%    Depending on the signal type, additional controls for integer parameters may be enabled.
+% 2. **Adjust Parameters:** Modify signal duration and integer parameters as needed.
+% 3. **Analyze Channel:** Press the "Analyze Channel" button to generate the signal, transmit it through the channel, 
+%    and plot the time-domain and frequency-domain responses.
+% 4. **View Results:** The time-domain plot shows the original and output signals. The frequency-domain plot 
+%    shows the estimated frequency response of the channel, and numerical results are displayed in the output area.
+
+% Notes:
+% - The app loads channel information (sampling frequency `fs` and system ID `sid`) from the `DataA2.mat` file.
+% - Signal duration can be set from 1 to 5000 ms.
+% - Integer parameters (e.g., number of sinusoids or PRBS order) are available for specific signal types.
+% - Ensure valid signal types and parameters are selected before analyzing the channel.
+
+% Class ChannelAnalysisApp < matlab.apps.AppBase
+% This class implements the UI and functionality for the Channel Analysis App, 
+% including signal generation, channel transmission, and result visualization.
+
+classdef ChannelAnalysisApp < matlab.apps.AppBase
+
+    properties (Access = public)
+        UIFigure                   matlab.ui.Figure
+        GridLayout                 matlab.ui.container.GridLayout
+        LeftPanel                  matlab.ui.container.Panel
+        SignalTypeDropDownLabel    matlab.ui.control.Label
+        SignalTypeDropDown         matlab.ui.control.DropDown
+        IntegerParameterSliderLabel  matlab.ui.control.Label
+        IntegerParameterSlider     matlab.ui.control.Slider
+        IntegerParameterEditField  matlab.ui.control.NumericEditField
+        DurationmsSliderLabel      matlab.ui.control.Label
+        DurationmsSlider           matlab.ui.control.Slider
+        DurationmsEditField        matlab.ui.control.NumericEditField
+        AnalyzeChannelButton       matlab.ui.control.Button
+        OutputTextAreaLabel        matlab.ui.control.Label
+        OutputTextArea             matlab.ui.control.TextArea
+        RightPanel                 matlab.ui.container.Panel
+        TimeDomainAxes             matlab.ui.control.UIAxes
+        FrequencyDomainAxes        matlab.ui.control.UIAxes
+    end
+
+    properties (Access = private)
+        sid     
+        fs      
+        signal  
+        y_signal  
+    end
+
+    methods (Access = private)
+
+        function startupFcn(app)
+            load('DataA2.mat', 'sid', 'fs');
+            app.sid = sid;
+            app.fs = fs;
+
+            % Initialize defaults
+            app.DurationmsEditField.Value = 1; 
+            app.DurationmsSlider.Value = 1;
+
+            app.IntegerParameterEditField.Value = 5;
+            app.IntegerParameterSlider.Value = 5;
+        end
+
+        function SignalTypeDropDownValueChanged(app, ~)
+            signalType = app.SignalTypeDropDown.Value;
+
+            % Enable or disable integer parameter controls based on signal type
+            if ismember(signalType, {'Sum of Sinusoids', 'PRBS Signal'})
+                app.IntegerParameterSlider.Enable = 'on';
+                app.IntegerParameterEditField.Enable = 'on';
+
+                if strcmp(signalType, 'Sum of Sinusoids')
+                    app.IntegerParameterSlider.Limits = [1 20];
+                    app.IntegerParameterSlider.Value = 5;
+                    app.IntegerParameterEditField.Value = 5;
+                    % app.IntegerParameterSlider.MajorTicks = 1:1:20;
+                    % app.IntegerParameterSlider.ValueDisplayFormat = '%.0f';
+                    app.IntegerParameterSliderLabel.Text = 'Number of Sinusoids';
+                else  % PRBS Signal
+                    app.IntegerParameterSlider.Limits = [2 16];
+                    app.IntegerParameterSlider.Value = 10;
+                    app.IntegerParameterEditField.Value = 10;
+                    % app.IntegerParameterSlider.MajorTicks = 2:1:16;
+                    % app.IntegerParameterSlider.ValueDisplayFormat = '%.0f';
+                    app.IntegerParameterSliderLabel.Text = 'PRBS Order';
+                end
+            else
+                app.IntegerParameterSlider.Enable = 'off';
+                app.IntegerParameterEditField.Enable = 'off';
+            end
+        end
+
+        function AnalyzeChannelButtonPushed(app, ~)
+            try
+                % Get user inputs
+                signalType = app.SignalTypeDropDown.Value;
+                duration_ms = app.DurationmsEditField.Value;
+
+                % Generate time vector
+                t = 0:1/app.fs:(duration_ms/1000) - 1/app.fs;
+
+                % Generate signal
+                app.signal = generateSignal(app, signalType, t);
+
+                % Transmit through channel
+                app.y_signal = channel(app.sid, app.signal, app.fs);
+
+                % Plot signals
+                plotTimeDomain(app, t);
+                plotFrequencyDomain(app);
+
+                % Display results
+                displayResults(app);
+
+            catch ME
+                uialert(app.UIFigure, ME.message, 'Error');
+            end
+        end
+
+        function IntegerParameterSliderValueChanged(app, event)
+            value = round(event.Value);
+            app.IntegerParameterEditField.Value = value;
+        end
+
+        function IntegerParameterEditFieldValueChanged(app, event)
+            value = round(event.Value);
+            value = max(min(value, app.IntegerParameterSlider.Limits(2)), app.IntegerParameterSlider.Limits(1));
+            app.IntegerParameterEditField.Value = value;
+            app.IntegerParameterSlider.Value = value;
+        end
+
+        function DurationmsSliderValueChanged(app, event)
+            value = event.Value;
+            app.DurationmsEditField.Value = value;
+        end
+
+        function DurationmsEditFieldValueChanged(app, event)
+            value = event.Value;
+            value = max(min(value, app.DurationmsSlider.Limits(2)), app.DurationmsSlider.Limits(1));
+            app.DurationmsEditField.Value = value;
+            app.DurationmsSlider.Value = value;
+        end
+
+        function signal = generateSignal(app, signalType, t)
+            switch signalType
+                case 'Impulse Signal'
+                    % Generate an impulse signal (Dirac delta approximation)
+                    signal = zeros(size(t));
+                    signal(1) = 1;
+
+                case 'Narrow Pulse'
+                    % Generate a narrow rectangular pulse
+                    pulseWidth = round(0.001 * length(t));
+                    signal = zeros(size(t));
+                    signal(1:pulseWidth) = 1;
+
+                case 'White Noise'
+                    % Generate white Gaussian noise
+                    signal = randn(size(t));
+
+                case 'Chirp Signal'
+                    % Generate a linear chirp from 20 Hz to fs/2 Hz
+                    f0 = 20;
+                    f1 = app.fs / 2 - 1000;
+                    signal = chirp(t, f0, t(end), f1);
+
+                case 'Sum of Sinusoids'
+                    % Generate a sum of sinusoids at specific frequencies
+                    numSinusoids = round(app.IntegerParameterEditField.Value);
+                    baseFreq = 1000;
+                    freqGap = (app.fs / 2 - baseFreq) / numSinusoids;
+                    freqs = baseFreq:freqGap:(baseFreq + (numSinusoids - 1) * freqGap);
+                    signal = sum(sin(2 * pi * freqs' * t), 1);
+
+                case 'Square Wave'
+                    % Generate a square wave at a given frequency
+                    freq = 1000;
+                    signal = square(2 * pi * freq * t);
+
+                case 'Custom'
+                    % Generate a custom signal
+                    freq = 15000;
+                    signal = sin(2 * pi * freq * t);
+
+                case 'PRBS Signal'
+                    % Generate a Pseudo-Random Binary Sequence (PRBS)
+                    prbsOrder = round(app.IntegerParameterEditField.Value); 
+                    nBits = 2^prbsOrder - 1;
+                    % Create a simple PRBS using XOR feedback
+                    reg = ones(1, prbsOrder);
+                    prbs = zeros(1, nBits);
+                    for i = 1:nBits
+                        newBit = xor(reg(end), reg(end - 1));
+                        prbs(i) = reg(end);
+                        reg = [newBit, reg(1:end - 1)];
+                    end
+                    signal = repmat(prbs, 1, ceil(length(t)/length(prbs)));
+                    signal = signal(1:length(t));
+                    signal = 2 * signal - 1; 
+
+                case 'Exponential Sweep'
+                    % Generate an exponential sweep from 20 Hz to fs/2 Hz
+                    f0 = 20;
+                    f1 = app.fs / 2 - 1000;
+                    signal = chirp(t, f0, t(end), f1, 'logarithmic');
+
+                otherwise
+                    error('Unknown signal type selected.');
+            end
+
+            % Normalize signal to prevent clipping
+            signal = signal / max(abs(signal) + eps);
+        end
+
+        function plotTimeDomain(app, t)
+            cla(app.TimeDomainAxes); 
+            plot(app.TimeDomainAxes, t, app.signal, 'b', t, app.y_signal, 'r');
+            legend(app.TimeDomainAxes, 'Input Signal', 'Output Signal');
+            xlabel(app.TimeDomainAxes, 'Time (s)');
+            ylabel(app.TimeDomainAxes, 'Amplitude');
+            xlim(app.TimeDomainAxes, [0, t(end)]);
+            title(app.TimeDomainAxes, 'Time-Domain Signals');
+            drawnow;
+        end
+
+        function plotFrequencyDomain(app)
+            n = length(app.signal);
+            % Compute frequency vector
+            f = (0:n-1)*(app.fs/n);
+
+            fft_signal = fft(app.signal);
+            fft_y_signal = fft(app.y_signal);
+
+            epsilon = 1e-12;
+            fft_signal_abs = fft_signal;
+            fft_signal_abs(abs(fft_signal_abs) < epsilon) = epsilon;
+
+            % Compute frequency response H(f) = Y(f)/X(f)
+            H_f = fft_y_signal ./ fft_signal_abs;
+
+            cla(app.FrequencyDomainAxes); 
+            plot(app.FrequencyDomainAxes, f(1:n/2), abs(H_f(1:n/2)));
+            xlabel(app.FrequencyDomainAxes, 'Frequency (Hz)');
+            ylabel(app.FrequencyDomainAxes, '|H(f)|');
+            xlim(app.FrequencyDomainAxes, [0, app.fs/2]);
+            title(app.FrequencyDomainAxes, 'Estimated Frequency Response |H(f)|');
+            drawnow;
+        end
+
+        function displayResults(app)
+            n = length(app.signal);
+            f = (0:n-1)*(app.fs/n);
+            fft_signal = fft(app.signal);
+            fft_y_signal = fft(app.y_signal);
+        
+            epsilon = 1e-12;
+            fft_signal_abs = fft_signal;
+            fft_signal_abs(abs(fft_signal_abs) < epsilon) = epsilon;
+        
+            H_f = fft_y_signal ./ fft_signal_abs;
+        
+            % Select frequencies up to Nyquist frequency
+            num_points = 10; 
+            max_freq = app.fs / 2; 
+            selected_freqs = linspace(0, max_freq, num_points);
+            results = '';
+        
+            for freq = selected_freqs
+                [~, idx] = min(abs(f - freq));
+                magnitude = abs(H_f(idx));
+                phase = angle(H_f(idx)) * (180 / pi);
+                results = sprintf('%sFrequency: %.2f Hz, |H(f)|: %.4f, Phase: %.2f degrees\n', ...
+                                  results, freq, magnitude, phase);
+            end
+        
+            app.OutputTextArea.Value = results;
+        end
+
+    end
+
+    % Component initialization
+    methods (Access = private)
+
+        function createComponents(app)
+
+            % Create UIFigure and hide until all components are created
+            app.UIFigure = uifigure('Visible', 'off');
+            app.UIFigure.Position = [100 100 1200 800];
+            app.UIFigure.Name = 'Channel Analysis App';
+
+            % Create GridLayout
+            app.GridLayout = uigridlayout(app.UIFigure, [1, 2]);
+            app.GridLayout.ColumnWidth = {'1x', '2x'};
+
+            % Create LeftPanel
+            app.LeftPanel = uipanel(app.GridLayout);
+            app.LeftPanel.Title = 'Controls';
+            app.LeftPanel.Layout.Row = 1;
+            app.LeftPanel.Layout.Column = 1;
+
+            % Create RightPanel
+            app.RightPanel = uipanel(app.GridLayout);
+            app.RightPanel.Title = 'Plots';
+            app.RightPanel.Layout.Row = 1;
+            app.RightPanel.Layout.Column = 2;
+
+            % Create components inside LeftPanel
+            leftGrid = uigridlayout(app.LeftPanel, [8, 2]);
+            leftGrid.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', '2x', 'fit'};
+            leftGrid.ColumnWidth = {'fit', '1x'};
+            leftGrid.Padding = [10 10 10 10];
+            leftGrid.RowSpacing = 5;
+
+            % SignalTypeDropDownLabel
+            app.SignalTypeDropDownLabel = uilabel(leftGrid);
+            app.SignalTypeDropDownLabel.Text = 'Signal Type';
+            app.SignalTypeDropDownLabel.Layout.Row = 1;
+            app.SignalTypeDropDownLabel.Layout.Column = 1;
+
+            % SignalTypeDropDown
+            app.SignalTypeDropDown = uidropdown(leftGrid);
+            app.SignalTypeDropDown.Items = {'Impulse Signal', 'Narrow Pulse', 'White Noise', 'Chirp Signal', 'Sum of Sinusoids', 'Square Wave', 'Custom', 'PRBS Signal', 'Exponential Sweep'};
+            app.SignalTypeDropDown.ValueChangedFcn = createCallbackFcn(app, @SignalTypeDropDownValueChanged, true);
+            app.SignalTypeDropDown.Layout.Row = 1;
+            app.SignalTypeDropDown.Layout.Column = 2;
+            app.SignalTypeDropDown.Value = 'Impulse Signal';
+
+            % IntegerParameterSliderLabel
+            app.IntegerParameterSliderLabel = uilabel(leftGrid);
+            app.IntegerParameterSliderLabel.Text = 'Integer Parameter';
+            app.IntegerParameterSliderLabel.Layout.Row = 2;
+            app.IntegerParameterSliderLabel.Layout.Column = 1;
+
+            % IntegerParameterSlider
+            app.IntegerParameterSlider = uislider(leftGrid);
+            app.IntegerParameterSlider.Limits = [1 20];
+            app.IntegerParameterSlider.ValueChangedFcn = createCallbackFcn(app, @IntegerParameterSliderValueChanged, true);
+            app.IntegerParameterSlider.Layout.Row = 3;
+            app.IntegerParameterSlider.Layout.Column = [1 2];
+            app.IntegerParameterSlider.Enable = 'off';
+
+            % IntegerParameterEditField
+            app.IntegerParameterEditField = uieditfield(leftGrid, 'numeric');
+            app.IntegerParameterEditField.ValueChangedFcn = createCallbackFcn(app, @IntegerParameterEditFieldValueChanged, true);
+            app.IntegerParameterEditField.Layout.Row = 2;
+            app.IntegerParameterEditField.Layout.Column = 2;
+            app.IntegerParameterEditField.Enable = 'off'; 
+
+            % DurationmsSliderLabel
+            app.DurationmsSliderLabel = uilabel(leftGrid);
+            app.DurationmsSliderLabel.Text = 'Duration (ms)';
+            app.DurationmsSliderLabel.Layout.Row = 4;
+            app.DurationmsSliderLabel.Layout.Column = 1;
+
+            % DurationmsSlider
+            app.DurationmsSlider = uislider(leftGrid);
+            app.DurationmsSlider.Limits = [1 5000]; 
+            app.DurationmsSlider.ValueChangedFcn = createCallbackFcn(app, @DurationmsSliderValueChanged, true);
+            app.DurationmsSlider.Layout.Row = 5;
+            app.DurationmsSlider.Layout.Column = [1 2];
+            app.DurationmsSlider.Value = 1000;
+
+            % DurationmsEditField
+            app.DurationmsEditField = uieditfield(leftGrid, 'numeric');
+            app.DurationmsEditField.ValueChangedFcn = createCallbackFcn(app, @DurationmsEditFieldValueChanged, true);
+            app.DurationmsEditField.Layout.Row = 4;
+            app.DurationmsEditField.Layout.Column = 2;
+            app.DurationmsEditField.Value = 1000;
+
+            % AnalyzeChannelButton
+            app.AnalyzeChannelButton = uibutton(leftGrid, 'push');
+            app.AnalyzeChannelButton.ButtonPushedFcn = createCallbackFcn(app, @AnalyzeChannelButtonPushed, true);
+            app.AnalyzeChannelButton.Text = 'Analyze Channel';
+            app.AnalyzeChannelButton.Layout.Row = 6;
+            app.AnalyzeChannelButton.Layout.Column = [1 2];
+            app.AnalyzeChannelButton.FontSize = 14;
+
+            % OutputTextAreaLabel
+            app.OutputTextAreaLabel = uilabel(leftGrid);
+            app.OutputTextAreaLabel.Text = 'Output';
+            app.OutputTextAreaLabel.Layout.Row = 7;
+            app.OutputTextAreaLabel.Layout.Column = 1;
+
+            % OutputTextArea
+            app.OutputTextArea = uitextarea(leftGrid);
+            app.OutputTextArea.Layout.Row = [7 8];
+            app.OutputTextArea.Layout.Column = [1 2];
+
+            % Create components inside RightPanel
+            rightGrid = uigridlayout(app.RightPanel, [2, 1]);
+            rightGrid.RowHeight = {'1x', '1x'};
+            rightGrid.ColumnWidth = {'1x'};
+            rightGrid.Padding = [10 10 10 10];
+            rightGrid.RowSpacing = 10;
+
+            % TimeDomainAxes
+            app.TimeDomainAxes = uiaxes(rightGrid);
+            app.TimeDomainAxes.Layout.Row = 1;
+            app.TimeDomainAxes.Layout.Column = 1;
+            title(app.TimeDomainAxes, 'Time-Domain Signals');
+            xlabel(app.TimeDomainAxes, 'Time (s)');
+            ylabel(app.TimeDomainAxes, 'Amplitude');
+
+            % FrequencyDomainAxes
+            app.FrequencyDomainAxes = uiaxes(rightGrid);
+            app.FrequencyDomainAxes.Layout.Row = 2;
+            app.FrequencyDomainAxes.Layout.Column = 1;
+            title(app.FrequencyDomainAxes, 'Estimated Frequency Response |H(f)|');
+            xlabel(app.FrequencyDomainAxes, 'Frequency (Hz)');
+            ylabel(app.FrequencyDomainAxes, '|H(f)|');
+
+            app.UIFigure.Visible = 'on';
+        end
+    end
+
+    methods (Access = public)
+
+        % App startup
+        function app = ChannelAnalysisApp
+
+            createComponents(app)
+            registerApp(app, app.UIFigure)
+            runStartupFcn(app, @startupFcn)
+        end
+
+        % App teardown
+        function delete(app)
+
+            delete(app.UIFigure)
+        end
+    end
+end
+```
+##### Signal Visualization App
+```matlab
+% Signal Visualization App
+% Description:
+% This MATLAB app allows users to load an audio or signal file, apply
+% denoising techniques, and visualize the signal in both the time and frequency
+% domains. The app is equipped with user-friendly controls and visualizations, 
+% making it a useful tool for signal processing tasks such as noise reduction 
+% and spectral analysis. The app accepts signals in both .wav and .mat formats.
+
+% Features:
+% - Load Signal: The user can load audio files (.wav) or signal data from .mat files.
+% - Apply Denoising: The app applies a denoising filter to the loaded signal.
+% - Time Domain Visualization: The app displays the signal waveform in the time domain.
+% - Frequency Domain Visualization: The app shows the magnitude spectrum of the signal in the frequency domain.
+% - Interactive Controls: The user can toggle between viewing the time and frequency domains.
+
+% How to Use:
+% 1. Press the "Load Signal" button to load an audio or signal file.
+% 2. Use the checkboxes to select whether to display the time domain, frequency domain, or both.
+% 3. Press the "Apply Denoising" button to apply noise reduction to the loaded signal.
+% 4. The app will update the plots accordingly in the Time Domain and Frequency Domain panels.
+
+% Notes:
+% - The signal must be in a valid format: either .wav or .mat with 'signal' and 'fs' fields.
+% - The sampling frequency (fs) is automatically detected from the file.
+% - Plots are updated automatically after loading a signal or applying denoising.
+
+% Class SignalVisualizationApp < matlab.apps.AppBase
+% This class contains all the components and functionality of the app.
+
+classdef SignalVisualizationApp < matlab.apps.AppBase
+
+    properties (Access = public)
+        UIFigure                matlab.ui.Figure
+        GridLayout              matlab.ui.container.GridLayout
+        LeftPanel               matlab.ui.container.Panel
+        RightPanel              matlab.ui.container.Panel
+        
+        % Left Panel Components
+        LoadSignalButton        matlab.ui.control.Button
+        ApplyDenoisingButton    matlab.ui.control.Button
+        FrequencyDomainCheckBox matlab.ui.control.CheckBox
+        TimeDomainCheckBox      matlab.ui.control.CheckBox
+        
+        % Right Panel Components
+        UIAxes1                 matlab.ui.control.UIAxes
+        UIAxes2                 matlab.ui.control.UIAxes
+    end
+    
+    properties (Access = private)
+        input_signal            % User-loaded or generated signal
+        fs                      % Sampling frequency
+        denoised_signal         % Denoised signal
+        outputDir               % Output directory for data
+        frequency_axis          % Frequency axis for plotting
+    end
+    
+    methods (Access = private)
+        
+        function startupFcn(app)
+            app.fs = 44100;
+            app.outputDir = 'Output/Data1';
+            app.TimeDomainCheckBox.Value = true;
+            app.FrequencyDomainCheckBox.Value = true;
+        end
+        
+        function LoadSignalButtonPushed(app, ~)
+            [file, path] = uigetfile({'*.wav;*.mat'}, 'Select an Audio or MAT File');
+            if isequal(file, 0)
+                return;
+            end
+            [~, ~, ext] = fileparts(file);
+            if strcmp(ext, '.mat')
+                data = load(fullfile(path, file));
+                if isfield(data, 'signal') && isfield(data, 'fs')
+                    app.input_signal = data.signal;
+                    app.fs = data.fs;
+                else
+                    uialert(app.UIFigure, 'MAT file must contain variables "signal" and "fs".', 'Invalid File');
+                    return;
+                end
+            else
+                [app.input_signal, app.fs] = audioread(fullfile(path, file));
+            end
+            app.input_signal = app.input_signal(:)';
+
+            plotSignal(app, app.input_signal, 'Proccessed Signal');
+        end
+        
+        function ApplyDenoisingButtonPushed(app, ~)
+            % Apply denoising to the input signal
+            if isempty(app.input_signal)
+                uialert(app.UIFigure, 'No input signal loaded.', 'Error');
+                return;
+            end
+            
+            % Perform denoising (using the inverse filter from main script)
+            data = load(fullfile(app.outputDir, 'processed_data.mat'));
+            inverse_response = data.system_frequency_response;
+            inverse_filter_coeffs = ifft([inverse_response; flipud(inverse_response)], 'symmetric');
+            numCoeffs = 500;
+            window = hamming(numCoeffs);
+            inverse_filter_coeffs = inverse_filter_coeffs(1:numCoeffs) .* window;
+            
+            app.denoised_signal = filter(inverse_filter_coeffs, 1, app.input_signal);
+            
+            plotSignal(app, app.denoised_signal, 'Denoised Signal');
+        end
+        
+        function plotSignal(app, signal, titleStr)
+            t = (0:length(signal)-1)/app.fs;
+            n = length(signal);
+            Y = fft(signal);
+            f = (0:n/2-1)*(app.fs/n);
+            magnitude_spectrum = abs(Y(1:n/2));
+            
+            if app.TimeDomainCheckBox.Value
+                plot(app.UIAxes1, t, signal);
+                xlabel(app.UIAxes1, 'Time (s)');
+                ylabel(app.UIAxes1, 'Amplitude');
+                title(app.UIAxes1, [titleStr ' - Time Domain']);
+            else
+                cla(app.UIAxes1);
+            end
+            
+            if app.FrequencyDomainCheckBox.Value
+                plot(app.UIAxes2, f, magnitude_spectrum);
+                xlabel(app.UIAxes2, 'Frequency (Hz)');
+                ylabel(app.UIAxes2, 'Magnitude');
+                title(app.UIAxes2, [titleStr ' - Frequency Domain']);
+            else
+                cla(app.UIAxes2);
+            end
+        end
+    end
+    
+    methods (Access = private)
+        function createComponents(app)
+            % Create UIFigure and components
+            app.UIFigure = uifigure('Visible', 'off');
+            app.UIFigure.Position = [100 100 1000 600];
+            app.UIFigure.Name = 'Signal Visualization App';
+            
+            % Create GridLayout
+            app.GridLayout = uigridlayout(app.UIFigure, [1, 2]);
+            app.GridLayout.ColumnWidth = {'1x', '2x'};
+            
+            % Create LeftPanel
+            app.LeftPanel = uipanel(app.GridLayout);
+            app.LeftPanel.Title = 'Controls';
+            app.LeftPanel.Layout.Row = 1;
+            app.LeftPanel.Layout.Column = 1;
+            
+            % Create components inside LeftPanel
+            leftGrid = uigridlayout(app.LeftPanel, [5, 1]);
+            leftGrid.RowHeight = repmat({'fit'}, 1, 5);
+            leftGrid.Padding = [10 10 10 10];
+            leftGrid.RowSpacing = 5;
+            
+            % LoadSignalButton
+            app.LoadSignalButton = uibutton(leftGrid, 'push');
+            app.LoadSignalButton.ButtonPushedFcn = createCallbackFcn(app, @LoadSignalButtonPushed, true);
+            app.LoadSignalButton.Text = 'Load Signal';
+            app.LoadSignalButton.Layout.Row = 1;
+            app.LoadSignalButton.Layout.Column = 1;
+            
+            % TimeDomainCheckBox
+            app.TimeDomainCheckBox = uicheckbox(leftGrid);
+            app.TimeDomainCheckBox.Text = 'Show Time Domain';
+            app.TimeDomainCheckBox.Value = true;
+            app.TimeDomainCheckBox.Layout.Row = 2;
+            app.TimeDomainCheckBox.Layout.Column = 1;
+            
+            % FrequencyDomainCheckBox
+            app.FrequencyDomainCheckBox = uicheckbox(leftGrid);
+            app.FrequencyDomainCheckBox.Text = 'Show Frequency Domain';
+            app.FrequencyDomainCheckBox.Value = true;
+            app.FrequencyDomainCheckBox.Layout.Row = 3;
+            app.FrequencyDomainCheckBox.Layout.Column = 1;
+            
+            % ApplyDenoisingButton
+            app.ApplyDenoisingButton = uibutton(leftGrid, 'push');
+            app.ApplyDenoisingButton.ButtonPushedFcn = createCallbackFcn(app, @ApplyDenoisingButtonPushed, true);
+            app.ApplyDenoisingButton.Text = 'Apply Denoising';
+            app.ApplyDenoisingButton.Layout.Row = 4;
+            app.ApplyDenoisingButton.Layout.Column = 1;
+            
+            % Create RightPanel
+            app.RightPanel = uipanel(app.GridLayout);
+            app.RightPanel.Title = 'Signal Plots';
+            app.RightPanel.Layout.Row = 1;
+            app.RightPanel.Layout.Column = 2;
+            
+            % Create UIAxes1 and UIAxes2 in RightPanel
+            rightGrid = uigridlayout(app.RightPanel, [2, 1]);
+            rightGrid.RowHeight = {'1x', '1x'};
+            rightGrid.Padding = [10 10 10 10];
+            rightGrid.RowSpacing = 10;
+            
+            % UIAxes1
+            app.UIAxes1 = uiaxes(rightGrid);
+            app.UIAxes1.Layout.Row = 1;
+            app.UIAxes1.Layout.Column = 1;
+            xlabel(app.UIAxes1, 'Time (s)');
+            ylabel(app.UIAxes1, 'Amplitude');
+            title(app.UIAxes1, 'Time Domain');
+            
+            % UIAxes2
+            app.UIAxes2 = uiaxes(rightGrid);
+            app.UIAxes2.Layout.Row = 2;
+            app.UIAxes2.Layout.Column = 1;
+            xlabel(app.UIAxes2, 'Frequency (Hz)');
+            ylabel(app.UIAxes2, 'Magnitude');
+            title(app.UIAxes2, 'Frequency Domain');
+            
+            app.UIFigure.Visible = 'on';
+        end
+    end
+    
+    methods (Access = public)
+        % App startup
+        function app = SignalVisualizationApp
+            createComponents(app)
+            registerApp(app, app.UIFigure)
+            runStartupFcn(app, @startupFcn)
+        end
+        
+        % App teardown
+        function delete(app)
+            delete(app.UIFigure)
+        end
+    end
+end
+```
+##### Audio Playback App
+```matlab
+% Audio Playback App
+% Description:
+% The Audio Playback App is designed to allow users to select, combine, and 
+% play back audio signals with control over playback and filtering options. 
+% It supports playback of multiple signals simultaneously and provides basic 
+% audio manipulation features, such as adjusting volume, applying notch 
+% filters to remove noise, and exporting the processed audio.
+
+% Features:
+% - **Signal Selection:** Choose one or more processed signals for playback.
+% - **Combine Signals:** Combine selected signals for simultaneous playback.
+% - **Volume Control:** Adjust the volume of the playback using a slider.
+% - **Noise Filtering:** Apply a notch filter to remove specific noise frequencies.
+% - **Playback Controls:** Play, pause, stop, rewind, and fast-forward the audio.
+% - **Export Processed Audio:** Save the processed audio signal to a .wav file.
+% - **Signal Visualization:** View the time-domain representation of the current audio signal.
+
+% How to Use:
+% 1. **Select Signal(s):** Choose one or more signals from the list for playback.
+%    Check the "Combine Signals" option to play multiple signals together.
+% 2. **Adjust Volume:** Use the volume slider to control the playback volume.
+% 3. **Apply Filter (Optional):** Set the noise frequency and filter bandwidth,
+%    then press "Apply Filter" to remove unwanted noise from the signal.
+% 4. **Playback Controls:**
+%    - Press "Play" to start playing the selected signals.
+%    - Use "Pause/Resume", "Stop", "Rewind", or "Fast Forward" to control playback.
+% 5. **Export Audio:** After processing, press "Export Audio" to save the result as a .wav file.
+% 6. **Signal Visualization:** The selected signal is displayed in the right panel for analysis.
+
+% Notes:
+% - Signals are loaded from a pre-processed file, and carrier frequencies 
+%   are automatically displayed for selection.
+% - Noise filtering applies a notch filter centered at the specified frequency, 
+%   with a user-defined bandwidth.
+
+% Class AudioPlaybackApp < matlab.apps.AppBase
+% This class contains the implementation of the audio playback and signal manipulation functionalities.
+
+classdef AudioPlaybackApp < matlab.apps.AppBase
+
+    properties (Access = public)
+        UIFigure                matlab.ui.Figure
+        GridLayout              matlab.ui.container.GridLayout
+        LeftPanel               matlab.ui.container.Panel
+        RightPanel              matlab.ui.container.Panel
+        
+        % Left Panel Components
+        SignalListBoxLabel      matlab.ui.control.Label
+        SignalListBox           matlab.ui.control.ListBox
+        CombineSignalsCheckBox  matlab.ui.control.CheckBox
+        VolumeSliderLabel       matlab.ui.control.Label
+        VolumeSlider            matlab.ui.control.Slider
+        NoiseFreqEditFieldLabel matlab.ui.control.Label
+        NoiseFreqEditField      matlab.ui.control.NumericEditField
+        BandwidthEditFieldLabel matlab.ui.control.Label
+        BandwidthEditField      matlab.ui.control.NumericEditField
+        ApplyFilterButton       matlab.ui.control.Button
+        ExportButton            matlab.ui.control.Button
+        
+        % Playback Controls
+        PlayButton              matlab.ui.control.Button
+        PauseButton             matlab.ui.control.Button
+        StopButton              matlab.ui.control.Button
+        RewindButton            matlab.ui.control.Button
+        FastForwardButton       matlab.ui.control.Button
+        
+        % Right Panel Components
+        UIAxes                  matlab.ui.control.UIAxes
+    end
+    
+    properties (Access = private)
+        processed_signals       % Cell array of processed signals
+        fs                      % Sampling frequency
+        player                  % audioplayer object
+        combined_signal         % Combined signal for playback
+        current_signal          % Current signal selected
+        outputDir               % Output directory for data
+        carrier_frequencies     % Carrier frequencies
+        noise_frequency         % Noise frequency for filtering
+        filter_bandwidth        % Bandwidth of the notch filter
+    end
+    
+    methods (Access = private)
+        
+        function startupFcn(app)
+            % Load processed data
+            app.outputDir = 'Output/Data1';
+            data = load(fullfile(app.outputDir, 'processed_data.mat'));
+            app.processed_signals = data.processed_signals;
+            app.fs = data.fs;
+            app.carrier_frequencies = data.carrier_frequencies;
+            
+            signal_names = cellfun(@(fc) sprintf('Signal at %d Hz', fc), num2cell(app.carrier_frequencies), 'UniformOutput', false);
+            app.SignalListBox.Items = signal_names;
+
+            app.current_signal = app.processed_signals{1};
+            app.VolumeSlider.Value = 1;
+            app.noise_frequency = [];
+            app.filter_bandwidth = [];
+        end
+        
+        function PlayButtonPushed(app, ~)
+            if isempty(app.player) || ~isplaying(app.player)
+                
+                selected_indices = find(ismember(app.SignalListBox.Items, app.SignalListBox.Value));
+                if isempty(selected_indices)
+                    uialert(app.UIFigure, 'Please select at least one signal.', 'No Signal Selected');
+                    return;
+                end
+                if app.CombineSignalsCheckBox.Value
+                    % Combine selected signals
+                    selected_signals = cellfun(@(x) x(:)', app.processed_signals(selected_indices), 'UniformOutput', false);
+                    min_length = min(cellfun(@length, selected_signals));
+                    selected_signals = cellfun(@(x) x(1:min_length), selected_signals, 'UniformOutput', false);
+                    app.combined_signal = sum(cell2mat(selected_signals'), 1);
+                else
+                    % Play the first selected signal
+                    app.combined_signal = app.processed_signals{selected_indices(1)};
+                end
+                
+                % Apply volume
+                app.combined_signal = app.combined_signal * app.VolumeSlider.Value;
+                
+                % Apply noise filtering if specified
+                if ~isempty(app.noise_frequency) && ~isempty(app.filter_bandwidth)
+                    notchFilt = designfilt('bandstopiir', 'FilterOrder', 2, ...
+                                           'HalfPowerFrequency1', app.noise_frequency - app.filter_bandwidth/2, ...
+                                           'HalfPowerFrequency2', app.noise_frequency + app.filter_bandwidth/2, ...
+                                           'SampleRate', app.fs);
+                    app.combined_signal = filter(notchFilt, app.combined_signal);
+                end
+                
+                % Create audioplayer object
+                app.player = audioplayer(app.combined_signal, app.fs);
+                play(app.player);
+                
+                % Plot the signal
+                plot(app.UIAxes, (1:length(app.combined_signal))/app.fs, app.combined_signal);
+                xlabel(app.UIAxes, 'Time (s)');
+                ylabel(app.UIAxes, 'Amplitude');
+                title(app.UIAxes, 'Playback Signal');
+            end
+        end
+        
+        function PauseButtonPushed(app, ~)
+            if ~isempty(app.player)
+                if isplaying(app.player)
+                    pause(app.player);
+                else
+                    resume(app.player);
+                end
+            end
+        end
+        
+        function StopButtonPushed(app, ~)
+            if ~isempty(app.player)
+                stop(app.player);
+            end
+        end
+        
+        function RewindButtonPushed(app, ~)
+            if ~isempty(app.player)
+                current_sample = get(app.player, 'CurrentSample');
+                new_sample = max(1, current_sample - 5 * app.fs);
+                stop(app.player);
+                play(app.player, [new_sample, length(app.combined_signal)]);
+            end
+        end
+        
+        function FastForwardButtonPushed(app, ~)
+            if ~isempty(app.player)
+                current_sample = get(app.player, 'CurrentSample');
+                new_sample = min(length(app.combined_signal), current_sample + 5 * app.fs);
+                stop(app.player);
+                play(app.player, [new_sample, length(app.combined_signal)]);
+            end
+        end
+        
+        function VolumeSliderValueChanged(app, ~)
+            % Volume adjustment will take effect on next play
+        end
+        
+        function ApplyFilterButtonPushed(app, ~)
+            % Get noise frequency and bandwidth
+            app.noise_frequency = app.NoiseFreqEditField.Value;
+            app.filter_bandwidth = app.BandwidthEditField.Value;
+            
+            % Update the combined signal with the new filter
+            if ~isempty(app.combined_signal)
+                notchFilt = designfilt('bandstopiir', 'FilterOrder', 2, ...
+                                       'HalfPowerFrequency1', app.noise_frequency - app.filter_bandwidth/2, ...
+                                       'HalfPowerFrequency2', app.noise_frequency + app.filter_bandwidth/2, ...
+                                       'SampleRate', app.fs);
+                app.combined_signal = filter(notchFilt, app.combined_signal);
+                
+                plot(app.UIAxes, (1:length(app.combined_signal))/app.fs, app.combined_signal);
+                xlabel(app.UIAxes, 'Time (s)');
+                ylabel(app.UIAxes, 'Amplitude');
+                title(app.UIAxes, 'Filtered Signal');
+            end
+        end
+        
+        function ExportButtonPushed(app, ~)
+            [file, path] = uiputfile('*.wav', 'Save Audio File');
+            if isequal(file, 0)
+                return;
+            end
+            audiowrite(fullfile(path, file), app.combined_signal, app.fs);
+            uialert(app.UIFigure, 'Audio file saved successfully.', 'Export Complete');
+        end
+    end
+    
+    methods (Access = private)
+        function createComponents(app)
+            % Create UIFigure and components
+            app.UIFigure = uifigure('Visible', 'off');
+            app.UIFigure.Position = [100 100 800 600];
+            app.UIFigure.Name = 'Audio Playback App';
+            
+            % Create GridLayout
+            app.GridLayout = uigridlayout(app.UIFigure, [1, 2]);
+            app.GridLayout.ColumnWidth = {'1x', '2x'};
+            
+            % Create LeftPanel
+            app.LeftPanel = uipanel(app.GridLayout);
+            app.LeftPanel.Title = 'Controls';
+            app.LeftPanel.Layout.Row = 1;
+            app.LeftPanel.Layout.Column = 1;
+            
+            % Create components inside LeftPanel
+            leftGrid = uigridlayout(app.LeftPanel, [14, 2]);
+            leftGrid.RowHeight = repmat({'fit'}, 1, 14);
+            leftGrid.ColumnWidth = {'fit', '1x'};
+            leftGrid.RowSpacing = 5;
+            leftGrid.Padding = [10 10 10 10];
+            
+            % SignalListBoxLabel
+            app.SignalListBoxLabel = uilabel(leftGrid);
+            app.SignalListBoxLabel.Text = 'Select Signal(s):';
+            app.SignalListBoxLabel.Layout.Row = 1;
+            app.SignalListBoxLabel.Layout.Column = 1;
+            
+            % SignalListBox
+            app.SignalListBox = uilistbox(leftGrid);
+            app.SignalListBox.Multiselect = 'on';
+            app.SignalListBox.Layout.Row = [2 4];
+            app.SignalListBox.Layout.Column = [1 2];
+            
+            % CombineSignalsCheckBox
+            app.CombineSignalsCheckBox = uicheckbox(leftGrid);
+            app.CombineSignalsCheckBox.Text = 'Combine Signals';
+            app.CombineSignalsCheckBox.Layout.Row = 5;
+            app.CombineSignalsCheckBox.Layout.Column = [1 2];
+            
+            % VolumeSliderLabel
+            app.VolumeSliderLabel = uilabel(leftGrid);
+            app.VolumeSliderLabel.Text = 'Volume:';
+            app.VolumeSliderLabel.Layout.Row = 6;
+            app.VolumeSliderLabel.Layout.Column = 1;
+            
+            % VolumeSlider
+            app.VolumeSlider = uislider(leftGrid);
+            app.VolumeSlider.Limits = [0 2];
+            app.VolumeSlider.Value = 1;
+            app.VolumeSlider.ValueChangedFcn = createCallbackFcn(app, @VolumeSliderValueChanged, true);
+            app.VolumeSlider.Layout.Row = 7;
+            app.VolumeSlider.Layout.Column = [1 2];
+            
+            % NoiseFreqEditFieldLabel
+            app.NoiseFreqEditFieldLabel = uilabel(leftGrid);
+            app.NoiseFreqEditFieldLabel.Text = 'Noise Frequency (Hz):';
+            app.NoiseFreqEditFieldLabel.Layout.Row = 8;
+            app.NoiseFreqEditFieldLabel.Layout.Column = 1;
+            
+            % NoiseFreqEditField
+            app.NoiseFreqEditField = uieditfield(leftGrid, 'numeric');
+            app.NoiseFreqEditField.Layout.Row = 8;
+            app.NoiseFreqEditField.Layout.Column = 2;
+            
+            % BandwidthEditFieldLabel
+            app.BandwidthEditFieldLabel = uilabel(leftGrid);
+            app.BandwidthEditFieldLabel.Text = 'Filter Bandwidth (Hz):';
+            app.BandwidthEditFieldLabel.Layout.Row = 9;
+            app.BandwidthEditFieldLabel.Layout.Column = 1;
+            
+            % BandwidthEditField
+            app.BandwidthEditField = uieditfield(leftGrid, 'numeric');
+            app.BandwidthEditField.Layout.Row = 9;
+            app.BandwidthEditField.Layout.Column = 2;
+            
+            % ApplyFilterButton
+            app.ApplyFilterButton = uibutton(leftGrid, 'push');
+            app.ApplyFilterButton.ButtonPushedFcn = createCallbackFcn(app, @ApplyFilterButtonPushed, true);
+            app.ApplyFilterButton.Text = 'Apply Filter';
+            app.ApplyFilterButton.Layout.Row = 10;
+            app.ApplyFilterButton.Layout.Column = [1 2];
+            
+            % ExportButton
+            app.ExportButton = uibutton(leftGrid, 'push');
+            app.ExportButton.ButtonPushedFcn = createCallbackFcn(app, @ExportButtonPushed, true);
+            app.ExportButton.Text = 'Export Audio';
+            app.ExportButton.Layout.Row = 11;
+            app.ExportButton.Layout.Column = [1 2];
+            
+            % Playback Controls
+            % PlayButton
+            app.PlayButton = uibutton(leftGrid, 'push');
+            app.PlayButton.ButtonPushedFcn = createCallbackFcn(app, @PlayButtonPushed, true);
+            app.PlayButton.Text = 'Play';
+            app.PlayButton.Layout.Row = 12;
+            app.PlayButton.Layout.Column = 1;
+            
+            % PauseButton
+            app.PauseButton = uibutton(leftGrid, 'push');
+            app.PauseButton.ButtonPushedFcn = createCallbackFcn(app, @PauseButtonPushed, true);
+            app.PauseButton.Text = 'Pause/Resume';
+            app.PauseButton.Layout.Row = 12;
+            app.PauseButton.Layout.Column = 2;
+            
+            % StopButton
+            app.StopButton = uibutton(leftGrid, 'push');
+            app.StopButton.ButtonPushedFcn = createCallbackFcn(app, @StopButtonPushed, true);
+            app.StopButton.Text = 'Stop';
+            app.StopButton.Layout.Row = 13;
+            app.StopButton.Layout.Column = 1;
+            
+            % RewindButton
+            app.RewindButton = uibutton(leftGrid, 'push');
+            app.RewindButton.ButtonPushedFcn = createCallbackFcn(app, @RewindButtonPushed, true);
+            app.RewindButton.Text = 'Rewind';
+            app.RewindButton.Layout.Row = 13;
+            app.RewindButton.Layout.Column = 2;
+            
+            % FastForwardButton
+            app.FastForwardButton = uibutton(leftGrid, 'push');
+            app.FastForwardButton.ButtonPushedFcn = createCallbackFcn(app, @FastForwardButtonPushed, true);
+            app.FastForwardButton.Text = 'Fast Forward';
+            app.FastForwardButton.Layout.Row = 14;
+            app.FastForwardButton.Layout.Column = [1 2];
+            
+            % Create RightPanel
+            app.RightPanel = uipanel(app.GridLayout);
+            app.RightPanel.Title = 'Signal Visualization';
+            app.RightPanel.Layout.Row = 1;
+            app.RightPanel.Layout.Column = 2;
+            
+            % Create UIAxes in RightPanel
+            app.UIAxes = uiaxes(app.RightPanel);
+            app.UIAxes.Position = [20 20 540 520];
+            xlabel(app.UIAxes, 'Time (s)');
+            ylabel(app.UIAxes, 'Amplitude');
+            title(app.UIAxes, 'Signal');
+            
+            app.UIFigure.Visible = 'on';
+        end
+    end
+    
+    methods (Access = public)
+        % App startup
+        function app = AudioPlaybackApp
+            createComponents(app)
+            registerApp(app, app.UIFigure)
+            runStartupFcn(app, @startupFcn)
+        end
+        
+        % App teardown
+        function delete(app)
+            delete(app.UIFigure)
+        end
+    end
+end
+```
+#### Section 2
+```matlab
+%% EGB242 Assignment 2, Section 2 %%
+
+%% Initialise workspace
+clear all; close all;
+
+%% 2.1 Modeling DC Motor System Response
+
+% Constants
+alpha = 0.5;
+t = linspace(0, 20, 10000);
+
+% Step Response 
+psi_out = -4 + 2 * t + 4 * exp(-0.5 * t);
+
+% Step Input (unit step)
+step_input = ones(size(t));
+
+% Plotted
+figure;
+plot(t, psi_out, 'LineWidth', 2);
+hold on;
+plot(t, step_input, '--', 'LineWidth', 2);
+title('Comparison of Step Input and Step Response');
+xlabel('Time (seconds)');
+ylabel('Response');
+legend('Step Response \psi_{out}(t)', 'Step Input u(t)');
+grid on;
+
+%% 2.2 Feedback System Integration
+K_m = 1;  
+K_pot = 1;
+
+% Defined the transfer function of the motor Gm(s)
+num_Gm = [K_m];
+den_Gm = [1 alpha 0];
+
+% Defined the feedback system F(s) with the transfer function Gm(s) and feedback Hp(s)
+sys_Gm = tf(num_Gm, den_Gm);  
+sys_Hp = tf([K_pot], [1]);
+
+% Closed-loop feedback system F(s) = Gm(s) / (1 + Gm(s)*Hp(s))
+sys_closed_loop = feedback(sys_Gm, sys_Hp);
+
+% Simulated the step response using lsim
+[psi_out, t_out] = lsim(sys_closed_loop, step_input, t);
+
+% Plotted the step response
+figure;
+plot(t_out, psi_out, 'LineWidth', 2);
+hold on;
+plot(t, step_input, '--', 'LineWidth', 2); 
+title('Step Response of the Feedback System');
+xlabel('Time (seconds)');
+ylabel('Response');
+legend('Step Response \psi_{out}(t)', 'Step Input u(t)');
+grid on;
+
+%% 2.3 System Dynamics Analysis
+
+% Calculating system characteristics
+omega_n = 1;  % Natural frequency
+zeta = 0.25;  % Damping ratio
+
+% Time to peak (Tp)
+Tp = pi / (omega_n * sqrt(1 - zeta^2));
+
+% Settling time (Ts)
+Ts = 4 / (zeta * omega_n);
+
+% Percentage Overshoot (%OS)
+OS = 100 * exp(-pi * zeta / sqrt(1 - zeta^2));
+
+% Display results
+fprintf('Natural Frequency (ωn): %.2f rad/s\n', omega_n);
+fprintf('Damping Ratio (ζ): %.2f\n', zeta);
+fprintf('Time to Peak (Tp): %.2f seconds\n', Tp);
+fprintf('Settling Time (Ts): %.2f seconds\n', Ts);
+fprintf('Percentage Overshoot (%%OS): %.2f%%\n', OS);
+
+%% 2.4 Gain Adjustment Analysis
+
+% Defined the range of Kfb and Kfwd values to simulate
+K_fb_values = [0.1, 0.2, 0.5, 1, 2];
+K_fwd_values = [0.1, 0.2, 0.5, 1, 2];
+
+% Simulatted for different Kfb values while Kfwd = 1
+K_fwd = 1;
+
+figure;
+for K_fb = K_fb_values
+    % Closed-loop transfer function with gains
+    sys_closed_loop = feedback(K_fwd * sys_Gm, K_fb * sys_Hp);
+    
+    % Simulated the step response
+    [psi_out, t_out] = lsim(sys_closed_loop, step_input, t);
+    
+    % Plotted the step response for each Kfb
+    plot(t_out, psi_out, 'LineWidth', 2);
+    hold on;
+end
+
+title('Step Response for Different K_{fb} with K_{fwd} = 1');
+xlabel('Time (seconds)');
+ylabel('Response');
+legend(arrayfun(@(x) sprintf('K_{fb} = %.1f', x), K_fb_values, 'UniformOutput', false));
+grid on;
+
+% Simulatted for different Kfwd values while Kfb = 1
+K_fb = 1;
+
+figure;
+for K_fwd = K_fwd_values
+    % Closed-loop transfer function with gains
+    sys_closed_loop = feedback(K_fwd * sys_Gm, K_fb * sys_Hp);
+    
+    % Simulated the step response
+    [psi_out, t_out] = lsim(sys_closed_loop, step_input, t);
+    
+    % Plotted the step response for each Kfwd
+    plot(t_out, psi_out, 'LineWidth', 2);
+    hold on;
+end
+
+title('Step Response for Different K_{fwd} with K_{fb} = 1');
+xlabel('Time (seconds)');
+ylabel('Response');
+legend(arrayfun(@(x) sprintf('K_{fwd} = %.1f', x), K_fwd_values, 'UniformOutput', false));
+grid on;
+
+%% 2.5
+
+Tp = 13;
+
+
+% Solved for natural frequency based on desired time to peak
+omega_n = pi / (Tp * sqrt(1 - zeta^2)); 
+
+% Used the identified omega_n to adjust gains
+K_fwd = omega_n^2 * 4.75;  
+K_fb = 2 * zeta * omega_n;  
+
+% Defined the potentiometer transfer function Hp(s)
+sys_Hp = tf([K_pot], [1]);
+
+% Closed-loop transfer function with adjusted gains
+cameraTF = feedback(K_fwd * sys_Gm, K_fb * sys_Hp);
+
+
+% Simulated the step response of the adjusted system
+[psi_out, t_out] = lsim(cameraTF, step_input, t);
+
+% Plotted the step response
+figure;
+plot(t_out, psi_out, 'LineWidth', 2);
+title('Step Response of the Camera Control System (Tp = 13s)');
+xlabel('Time (seconds)');
+ylabel('Yaw Angle \psi(t)');
+legend('Step Response \psi_{out}(t)');
+grid on;
+
+% Display the adjusted gains
+fprintf('Adjusted Forward Gain (K_fwd): %.2f\n', K_fwd);
+fprintf('Adjusted Feedback Gain (K_fb): %.2f\n', K_fb);
+
+%% 2.6 Control System for Panoramic Views
+
+startAngle_deg = 30;
+endAngle_deg = 210;  
+actual_end_deg = 228;
+
+% Converted angles to radians
+startAngle_rad = startAngle_deg * (pi/180);  
+endAngle_rad = endAngle_deg * (pi/180);
+
+% Initial voltage calculations
+voltageRange = 1;
+startVoltage = (startAngle_rad / (2*pi)) * voltageRange;
+endVoltage = (endAngle_rad / (2*pi)) * voltageRange;
+
+% Behaviour Correction
+endVoltage_corrected = endVoltage * (endAngle_deg / actual_end_deg);
+
+% System Simulation
+[startIm, finalIm] = cameraPan(startVoltage, endVoltage_corrected, cameraTF);
+
+% Final Images
+figure;
+subplot(1,2,1);
+imshow(startIm);
+title(sprintf('Starting Image at %.0f°', startAngle_deg));
+
+subplot(1,2,2);
+imshow(finalIm);
+title(sprintf('Final Image at %.0f°', endAngle_deg));
+
+% Displayed Settings
+fprintf('Adjusted Start Voltage: %.2f V (for %.0f°)\n', startVoltage, startAngle_deg);
+fprintf('Adjusted End Voltage: %.2f V (for %.0f°)\n', endVoltage, endAngle_deg);
+fprintf('Mapped Start Angle: %.2f radians\n', startAngle_rad);
+fprintf('Mapped End Angle: %.2f radians\n', endAngle_rad);
+```
 
 ### Appendix B: Additional Material
 

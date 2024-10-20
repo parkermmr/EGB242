@@ -4,7 +4,7 @@
 clear all; close all;
 load DataA2 imagesReceived;
 
-%% 1.1 Initial Image Analysis
+%% 3.1 Initial Image Analysis
 
 % Dimensions of the image
 numRows = 480;
@@ -23,7 +23,7 @@ title('First Received Image of Landing Site');
 
 imwrite(firstImage2D, 'FirstLandingSiteImage.png');
 
-%% 3.2
+%% 3.2 Signal Analysis
 
 % Image dimensions and parameters
 numPixels = 307200; 
@@ -54,3 +54,16 @@ plot(f, abs(imageDataFFT));
 title('Frequency Domain Representation of Received Image Data');
 xlabel('Frequency (Hz)');
 ylabel('Magnitude');
+
+%% 3.3 Filter Selection
+
+% ----------------------> APPLICATION BUILT FOR THE PURPOSES OF THIS TASK <---------------------- %
+
+% For more information on the application please refer to
+% FilterAnalysisApp.m
+FilterAnalysisApp
+
+%% 3.4 Noise Removal using the Chosen Filter
+
+
+
