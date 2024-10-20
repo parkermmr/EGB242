@@ -146,7 +146,7 @@ sys_Hp = tf([K_pot], [1]);
 cameraTF = feedback(K_fwd * sys_Gm, K_fb * sys_Hp);
 
 
-% Simulate the step response of the adjusted system
+% Simulated the step response of the adjusted system
 [psi_out, t_out] = lsim(cameraTF, step_input, t);
 
 % Plotted the step response
@@ -168,7 +168,7 @@ startAngle_deg = 30;
 endAngle_deg = 210;  
 actual_end_deg = 228;
 
-% Convert angles to radians
+% Converted angles to radians
 startAngle_rad = startAngle_deg * (pi/180);  
 endAngle_rad = endAngle_deg * (pi/180);
 
@@ -193,7 +193,7 @@ subplot(1,2,2);
 imshow(finalIm);
 title(sprintf('Final Image at %.0f°', endAngle_deg));
 
-% Display Settings
+% Displayed Settings
 fprintf('Adjusted Start Voltage: %.2f V (for %.0f°)\n', startVoltage, startAngle_deg);
 fprintf('Adjusted End Voltage: %.2f V (for %.0f°)\n', endVoltage, endAngle_deg);
 fprintf('Mapped Start Angle: %.2f radians\n', startAngle_rad);

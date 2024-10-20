@@ -466,7 +466,7 @@ The panoramic sweep was successfully captured as planned:
 - **Starting Image**: The panorama began at an angle of 30°, providing an initial view of the Mars terrain directly in front of the rover.
 - **Final Image**: The sweep concluded at the corrected angle of 210°, showing a comprehensive view extending to the far landscape features, useful for mission planning and navigation.
 
-![Starting and Final Images of the Panorama](path_to_image/2.6_Start_and_Final_Image.png)
+![Starting and Final Images of the Panorama](Figures/2.6_Start_and_Final_Image.png)
 ***Figure 19:** Starting and Final Images from the Panoramic Sweep on Mars*
 
 The adjusted settings resulted in a smooth panoramic sweep, achieving the desired angular coverage without any observable overshoot or instability in the camera movement.
